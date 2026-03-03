@@ -40,6 +40,16 @@ exports.handler = async (event) => {
   try { params = JSON.parse(event.body || '{}'); }
   catch(e) { return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid JSON' }) }; }
 
+  // Claude AI呼び出し
+  if (params.action === 'claude') {
+    try {
+      const text = await callClaudeAPI(params.prompt);
+      return { statusCode: 200, headers, body: JSON.stringify({ text }) };
+    } catch(e) {
+      return { statusCode: 500, headers, body: JSON.stringify({ error: e.message }) };
+    }
+  }
+
   const { keywords, category = 'All', minDiscount = 0, sortBy = 'Relevance' } = params;
   if (!keywords) {
     return { statusCode: 400, headers, body: JSON.stringify({ error: 'keywordsが必要です' }) };
@@ -163,3 +173,28 @@ exports.handler = async (event) => {
     };
   }
 };
+
+
+// ── Claude AI呼び出し（投稿文・記事生成用）──
+async function callClaudeAPI(prompt) {
+  const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
+  if (!ANTHROPIC_KEY) throw new Error('ANTHROPIC_API_KEYが設定されていません');
+
+  const fetch = (await import('node-fetch')).default;
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': ANTHROPIC_KEY,
+      'anthropic-version': '2023-06-01'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  return (data.content || []).map(c => c.text || '').join('');
+}
