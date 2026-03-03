@@ -1,0 +1,8 @@
+{
+  "name": "amazon-sale-finder",
+  "version": "1.0.0",
+  "description": "Amazonセール品発見ツール",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
+}
