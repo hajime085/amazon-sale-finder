@@ -13,341 +13,198 @@
   --tw: #1DA1F2;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: -apple-system, 'Helvetica Neue', sans-serif;
-  background: var(--bg); color: var(--tx);
-  font-size: 14px; line-height: 1.6; min-height: 100vh;
-}
-
-/* ── Header ── */
-header {
-  background: var(--s1); border-bottom: 1px solid var(--bd);
-  padding: 12px 20px; display: flex; align-items: center;
-  gap: 12px; position: sticky; top: 0; z-index: 100;
-  flex-wrap: wrap;
-}
-.logo {
-  font-size: 18px; font-weight: 800;
-  background: linear-gradient(90deg,#FF9900,#ffcc44);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  white-space: nowrap;
-}
-.header-right { margin-left: auto; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-
-/* ── Search bar ── */
-.search-wrap {
-  background: var(--s1); border-bottom: 1px solid var(--bd);
-  padding: 14px 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;
-}
-.search-wrap .f { display: flex; flex-direction: column; gap: 4px; }
-.search-wrap .f label { font-size: 10px; color: var(--mu); font-weight: 700; text-transform: uppercase; letter-spacing: .4px; }
-
-/* ── Main ── */
-.main { max-width: 1100px; margin: 0 auto; padding: 20px; }
-
-/* ── Forms ── */
-input, select, textarea {
-  background: var(--s2); border: 1px solid var(--bd);
-  border-radius: 8px; color: var(--tx); padding: 9px 12px;
-  font-size: 13px; font-family: inherit; transition: border-color .15s;
-}
+body { font-family: -apple-system,'Helvetica Neue',sans-serif; background: var(--bg); color: var(--tx); font-size: 14px; line-height: 1.6; min-height: 100vh; }
+header { background: var(--s1); border-bottom: 1px solid var(--bd); padding: 12px 20px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100; flex-wrap: wrap; }
+.logo { font-size: 18px; font-weight: 800; background: linear-gradient(90deg,#FF9900,#ffcc44); -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap; }
+.tab-nav { background: var(--s1); border-bottom: 1px solid var(--bd); padding: 0 20px; display: flex; gap: 4px; }
+.tab-nav-btn { padding: 12px 20px; border: none; background: transparent; color: var(--mu); cursor: pointer; font-size: 14px; font-weight: 700; font-family: inherit; border-bottom: 3px solid transparent; transition: all .15s; }
+.tab-nav-btn.active { color: var(--am); border-bottom-color: var(--am); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.main { max-width: 800px; margin: 0 auto; padding: 24px 20px; }
+input, select, textarea { background: var(--s2); border: 1px solid var(--bd); border-radius: 8px; color: var(--tx); padding: 10px 14px; font-size: 13px; font-family: inherit; transition: border-color .15s; width: 100%; }
 input:focus, select:focus, textarea:focus { outline: none; border-color: var(--am); }
-textarea { resize: vertical; width: 100%; }
-
-/* ── Buttons ── */
-.btn {
-  padding: 9px 16px; border-radius: 8px; border: none;
-  cursor: pointer; font-size: 13px; font-weight: 700;
-  font-family: inherit; transition: all .15s; white-space: nowrap;
-  display: inline-flex; align-items: center; gap: 6px;
-}
+textarea { resize: vertical; }
+.label { font-size: 11px; color: var(--mu); font-weight: 700; text-transform: uppercase; letter-spacing: .4px; display: block; margin-bottom: 5px; }
+.field { margin-bottom: 14px; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.btn { padding: 10px 18px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 700; font-family: inherit; transition: all .15s; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
 .bp { background: var(--am); color: #000; }
 .bp:hover:not(:disabled) { background: var(--amd); transform: translateY(-1px); }
 .bs { background: var(--s2); color: var(--tx); border: 1px solid var(--bd); }
 .bs:hover { border-color: var(--am); color: var(--am); }
 .btn-tw { background: var(--tw); color: #fff; }
-.btn-tw:hover { background: #0d8fd9; transform: translateY(-1px); }
-.btn-gr { background: var(--gr); color: #000; }
-.btn-gr:hover { filter: brightness(1.1); }
+.btn-tw:hover:not(:disabled) { background: #0d8fd9; transform: translateY(-1px); }
 .btn:disabled { opacity: .45; cursor: not-allowed; transform: none !important; }
-
-/* ── Product grid ── */
-.results-header {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 16px; flex-wrap: wrap; gap: 8px;
-}
-.results-title { font-size: 15px; font-weight: 700; }
-.results-count { font-size: 12px; color: var(--mu); }
-
-.product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 16px;
-}
-
-.product-card {
-  background: var(--s1); border: 1px solid var(--bd);
-  border-radius: 14px; overflow: hidden;
-  transition: transform .2s, border-color .2s;
-  display: flex; flex-direction: column;
-}
-.product-card:hover { transform: translateY(-2px); border-color: var(--am); }
-.product-card.selected { border-color: var(--am); box-shadow: 0 0 0 2px rgba(255,153,0,.3); }
-
-.card-img {
-  width: 100%; height: 200px; object-fit: contain;
-  background: #fff; padding: 12px;
-}
-.card-img-ph {
-  width: 100%; height: 200px; background: var(--s2);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 48px;
-}
-
-.card-body { padding: 14px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
-.card-title { font-size: 13px; font-weight: 600; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-
-.card-badges { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-.disc-badge {
-  background: var(--re); color: #fff;
-  font-size: 13px; font-weight: 800;
-  padding: 3px 10px; border-radius: 20px;
-}
+.btn-full { width: 100%; justify-content: center; padding: 12px; font-size: 14px; }
+.card { background: var(--s1); border: 1px solid var(--bd); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+.card-title { font-size: 13px; font-weight: 700; color: var(--am); margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
+.disc-info { background: rgba(255,77,109,.1); border: 1px solid rgba(255,77,109,.3); border-radius: 10px; padding: 12px 16px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+.disc-badge { background: var(--re); color: #fff; font-size: 20px; font-weight: 800; padding: 4px 14px; border-radius: 20px; }
 .price-now { font-size: 22px; font-weight: 800; color: #fff; }
-.price-orig { font-size: 12px; text-decoration: line-through; color: var(--mu); }
-.price-save { font-size: 11px; color: var(--gr); font-weight: 700; }
-
-.card-features { font-size: 11px; color: var(--mu); line-height: 1.6; }
-
-.card-actions { display: flex; flex-direction: column; gap: 6px; margin-top: auto; padding-top: 8px; }
-.card-actions .btn { width: 100%; justify-content: center; font-size: 12px; padding: 8px; }
-
-/* ── Tweet modal ── */
-.modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,.7);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 1000; padding: 20px;
-}
-.modal {
-  background: var(--s1); border: 1px solid var(--bd);
-  border-radius: 16px; padding: 24px; width: 100%; max-width: 560px;
-  display: flex; flex-direction: column; gap: 14px;
-}
-.modal-title { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-.tweet-box {
-  background: var(--s2); border: 1px solid var(--bd);
-  border-radius: 10px; padding: 12px; font-size: 14px;
-  line-height: 1.7; white-space: pre-wrap; cursor: text;
-  min-height: 120px; color: var(--tx);
-}
-.tweet-count { font-size: 12px; color: var(--mu); text-align: right; }
-.modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
-
-/* ── Article panel ── */
-.article-panel {
-  background: var(--s1); border: 1px solid var(--bd);
-  border-radius: 14px; margin-top: 24px; overflow: hidden;
-}
-.article-panel-header {
-  padding: 14px 18px; border-bottom: 1px solid var(--bd);
-  display: flex; justify-content: space-between; align-items: center;
-  flex-wrap: wrap; gap: 8px;
-}
-.article-panel-title { font-size: 14px; font-weight: 700; color: var(--am); }
-.article-settings { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.article-body { padding: 18px; }
-
-/* ── Article output ── */
-.article-output {
-  background: var(--s2); border: 1px solid var(--bd);
-  border-radius: 10px; padding: 16px;
-  font-size: 12px; line-height: 1.8;
-  white-space: pre-wrap; font-family: 'Menlo', monospace;
-  max-height: 400px; overflow-y: auto;
-  margin-top: 14px;
-}
-
-/* ── Empty / Loading states ── */
-.empty-state {
-  text-align: center; padding: 60px 20px; color: var(--mu);
-}
+.price-orig { font-size: 13px; text-decoration: line-through; color: var(--mu); }
+.price-save { font-size: 12px; color: var(--gr); font-weight: 700; }
+.output-area { background: var(--s2); border: 1px solid var(--bd); border-radius: 10px; padding: 16px; font-size: 13px; line-height: 1.8; white-space: pre-wrap; font-family: inherit; min-height: 80px; margin-top: 10px; }
+.output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.output-label { font-size: 11px; font-weight: 700; color: var(--mu); }
+.char-count { font-size: 11px; color: var(--mu); }
+.char-count.over { color: var(--re); font-weight: 700; }
+.search-wrap { background: var(--s1); border-bottom: 1px solid var(--bd); padding: 14px 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+.search-wrap .f { display: flex; flex-direction: column; gap: 4px; }
+.search-wrap .f label { font-size: 10px; color: var(--mu); font-weight: 700; text-transform: uppercase; }
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.product-card { background: var(--s1); border: 1px solid var(--bd); border-radius: 14px; overflow: hidden; transition: transform .2s, border-color .2s; display: flex; flex-direction: column; }
+.product-card:hover { transform: translateY(-2px); border-color: var(--am); }
+.card-img { width: 100%; height: 180px; object-fit: contain; background: #fff; padding: 10px; }
+.card-img-ph { width: 100%; height: 180px; background: var(--s2); display: flex; align-items: center; justify-content: center; font-size: 40px; }
+.card-body { padding: 12px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.card-title2 { font-size: 12px; font-weight: 600; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.card-badges { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+.badge-disc { background: var(--re); color: #fff; font-size: 12px; font-weight: 800; padding: 2px 8px; border-radius: 20px; }
+.badge-price { font-size: 18px; font-weight: 800; }
+.badge-orig { font-size: 11px; text-decoration: line-through; color: var(--mu); }
+.card-actions { display: flex; flex-direction: column; gap: 5px; margin-top: auto; padding-top: 6px; }
+.card-actions .btn { width: 100%; justify-content: center; font-size: 11px; padding: 7px; }
+.sp { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.3); border-top-color: currentColor; border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 18px; border-radius: 10px; font-weight: 700; font-size: 13px; opacity: 0; transform: translateY(8px); transition: all .25s; z-index: 9999; pointer-events: none; }
+.toast.show { opacity: 1; transform: translateY(0); }
+.empty-state { text-align: center; padding: 60px 20px; color: var(--mu); }
 .empty-icon { font-size: 56px; margin-bottom: 16px; }
 .empty-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; color: var(--tx); }
-.empty-sub { font-size: 13px; }
-
-.loading-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;
-}
-.skeleton {
-  background: var(--s1); border: 1px solid var(--bd);
-  border-radius: 14px; overflow: hidden;
-}
-.skeleton-img { width: 100%; height: 200px; background: var(--s2); animation: pulse 1.5s infinite; }
-.skeleton-body { padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.loading-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.skeleton { background: var(--s1); border: 1px solid var(--bd); border-radius: 14px; overflow: hidden; }
+.skeleton-img { width: 100%; height: 180px; background: var(--s2); animation: pulse 1.5s infinite; }
+.skeleton-body { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
 .skeleton-line { height: 12px; background: var(--s2); border-radius: 6px; animation: pulse 1.5s infinite; }
 .skeleton-line.short { width: 60%; }
 @keyframes pulse { 0%,100%{opacity:.6} 50%{opacity:1} }
-
-/* ── Spinner ── */
-.sp {
-  width: 14px; height: 14px;
-  border: 2px solid rgba(255,255,255,.3); border-top-color: currentColor;
-  border-radius: 50%; animation: spin .7s linear infinite;
-  display: inline-block; flex-shrink: 0;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── Toast ── */
-.toast {
-  position: fixed; bottom: 20px; right: 20px;
-  padding: 12px 18px; border-radius: 10px;
-  font-weight: 700; font-size: 13px;
-  opacity: 0; transform: translateY(8px);
-  transition: all .25s; z-index: 9999; pointer-events: none;
-}
-.toast.show { opacity: 1; transform: translateY(0); }
-
-/* ── Responsive ── */
-@media (max-width: 600px) {
-  .search-wrap { flex-direction: column; }
-  .search-wrap input, .search-wrap select { width: 100%; }
-  .product-grid { grid-template-columns: 1fr; }
-}
+@media (max-width: 600px) { .row2 { grid-template-columns: 1fr; } .product-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
   <span>🛒</span>
   <div class="logo">Amazon セール品発見ツール</div>
-  <div class="header-right">
-    <span style="font-size:11px;color:var(--mu)">選択中:</span>
-    <span id="selectedCount" style="font-size:11px;background:rgba(255,153,0,.2);color:var(--am);padding:2px 8px;border-radius:20px;font-weight:700">0件</span>
-    <button class="btn btn-gr" id="articleBtn" onclick="openArticlePanel()" disabled>📝 記事を生成</button>
-  </div>
 </header>
 
-<!-- SEARCH BAR -->
-<div style="background:var(--s1);border-bottom:1px solid var(--bd);padding:0">
-  <div style="max-width:1100px;margin:0 auto;display:flex;border-bottom:1px solid var(--bd)">
-    <button class="tab-btn active" onclick="switchTab('search')" style="flex:1;padding:12px;background:transparent;border:none;color:var(--tx);cursor:pointer;font-weight:700;border-bottom:2px solid var(--am);transition:all .15s">🔍 キーワード検索</button>
-    <button class="tab-btn" onclick="switchTab('url')" style="flex:1;padding:12px;background:transparent;border:none;color:var(--mu);cursor:pointer;font-weight:700;border-bottom:2px solid transparent;transition:all .15s">🔗 URLから解析</button>
-  </div>
+<div class="tab-nav">
+  <button class="tab-nav-btn active" id="btn-quick" onclick="switchTab('quick',this)">⚡ 即時投稿作成</button>
+  <button class="tab-nav-btn" id="btn-search" onclick="switchTab('search',this)">🔍 セール品検索</button>
 </div>
 
-<div class="search-wrap" id="searchTab">
-  <div class="f" style="flex:1;min-width:200px">
-    <label>キーワード検索</label>
-    <input id="keywords" placeholder="例: モバイルバッテリー、イヤホン、掃除機..." style="width:100%"
-      onkeydown="if(event.key==='Enter')search()">
-  </div>
-  <div class="f">
-    <label>カテゴリ</label>
-    <select id="category">
-      <option value="All">すべて</option>
-      <option value="Electronics">家電・カメラ</option>
-      <option value="Computers">パソコン・周辺機器</option>
-      <option value="HomeAndKitchen">ホーム・キッチン</option>
-      <option value="Fashion">ファッション</option>
-      <option value="Toys">おもちゃ・ゲーム</option>
-      <option value="Sports">スポーツ・アウトドア</option>
-      <option value="Beauty">美容・健康</option>
-      <option value="Grocery">食品・飲料</option>
-      <option value="Books">本・雑誌</option>
-    </select>
-  </div>
-  <div class="f">
-    <label>最低割引率</label>
-    <select id="minDiscount">
-      <option value="0">指定なし</option>
-      <option value="10">10%以上</option>
-      <option value="20">20%以上</option>
-      <option value="30" selected>30%以上</option>
-      <option value="50">50%以上</option>
-      <option value="70">70%以上</option>
-    </select>
-  </div>
-  <div class="f">
-    <label>並び順</label>
-    <select id="sortBy">
-      <option value="Relevance">関連度順</option>
-      <option value="Price:LowToHigh">価格が安い順</option>
-      <option value="Price:HighToLow">価格が高い順</option>
-      <option value="NewestArrivals">新着順</option>
-    </select>
-  </div>
-  <button class="btn bp" id="searchBtn" onclick="search()" style="padding:9px 24px">
-    🔍 セール品を探す
-  </button>
-</div>
+<!-- 即時投稿作成タブ -->
+<div class="tab-content active" id="tab-quick">
+  <div class="main">
 
-<!-- URL INPUT TAB -->
-<div class="search-wrap" id="urlTab" style="display:none">
-  <div class="f" style="flex:1;min-width:200px">
-    <label>Amazon商品URL</label>
-    <input id="productUrl" placeholder="例: https://www.amazon.co.jp/dp/B0XXXXXXXX" style="width:100%"
-      onkeydown="if(event.key==='Enter')scrapeProduct()">
-  </div>
-  <button class="btn bp" id="scrapeBtn" onclick="scrapeProduct()" style="padding:9px 24px">
-    🔍 URLを解析
-  </button>
-</div>
-
-<!-- MAIN CONTENT -->
-<div class="main">
-  <div id="resultsArea">
-    <div class="empty-state">
-      <div class="empty-icon">🏷️</div>
-      <div class="empty-title">セール品を検索してみましょう</div>
-      <div class="empty-sub">キーワードとカテゴリを入力して「セール品を探す」をクリック</div>
-    </div>
-  </div>
-
-  <!-- Article Panel (hidden until products selected) -->
-  <div class="article-panel" id="articlePanel" style="display:none">
-    <div class="article-panel-header">
-      <div class="article-panel-title">📝 選択商品で記事を生成</div>
-      <div class="article-settings">
-        <select id="artFmt">
-          <option value="html">HTML（WordPress用）</option>
-          <option value="markdown">Markdown</option>
-        </select>
-        <select id="artLen">
-          <option value="short">短め</option>
-          <option value="medium" selected>標準</option>
-          <option value="long">詳細</option>
-        </select>
-        <button class="btn bp" id="genArtBtn" onclick="generateArticle()">🤖 AIで記事生成</button>
+    <div class="card">
+      <div class="card-title">📦 商品情報を入力（3項目だけでOK）</div>
+      <div class="field">
+        <span class="label">Amazon URL または ASIN ※必須</span>
+        <input id="qUrl" placeholder="https://www.amazon.co.jp/dp/B07XK6Z87X または B07XK6Z87X">
       </div>
-    </div>
-    <div class="article-body">
-      <div style="font-size:12px;color:var(--mu);margin-bottom:10px">
-        選択中の商品: <span id="selectedTitles" style="color:var(--tx)"></span>
-      </div>
-      <div id="articleOutput" style="display:none">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <span style="font-size:12px;font-weight:700;color:var(--am)">生成された記事</span>
-          <div style="display:flex;gap:6px">
-            <button class="btn bs" style="font-size:11px;padding:5px 10px" onclick="copyArticle()">📋 コピー</button>
-            <button class="btn bs" style="font-size:11px;padding:5px 10px" onclick="downloadArticle()">💾 保存</button>
-          </div>
+      <div class="row2">
+        <div class="field">
+          <span class="label">定価（円）</span>
+          <input type="number" id="qOrig" placeholder="5000" oninput="calcDisc()">
         </div>
-        <div class="article-output" id="articleText"></div>
+        <div class="field">
+          <span class="label">セール価格（円）※必須</span>
+          <input type="number" id="qSale" placeholder="2980" oninput="calcDisc()">
+        </div>
+      </div>
+      <div id="discInfo" style="display:none" class="disc-info">
+        <span class="disc-badge" id="discPct">-0%</span>
+        <span class="price-now" id="discSale"></span>
+        <span class="price-orig" id="discOrig"></span>
+        <span class="price-save" id="discSave"></span>
+      </div>
+      <div class="field">
+        <span class="label">商品名（空欄でAIが自動推測）</span>
+        <input id="qName" placeholder="例: Anker PowerCore 10000 モバイルバッテリー">
+      </div>
+      <div class="field">
+        <span class="label">ひとこと補足（任意）</span>
+        <input id="qNote" placeholder="例: タイムセール！在庫わずか、旅行に最適">
+      </div>
+      <button class="btn bp btn-full" id="genBtn" onclick="generateAll()">
+        🤖 X投稿文・ブログ記事を一括生成
+      </button>
+    </div>
+
+    <!-- X投稿文 -->
+    <div class="card" id="tweetCard" style="display:none">
+      <div class="card-title">🐦 X（Twitter）投稿文</div>
+      <div class="output-header">
+        <span class="output-label">#PR #AD 含む・200文字以内推奨</span>
+        <span class="char-count" id="tweetCount">0文字</span>
+      </div>
+      <div class="output-area" id="tweetOutput" contenteditable="true" oninput="updateTweetCount()"></div>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <button class="btn btn-tw" style="flex:1;justify-content:center;min-width:140px" onclick="copyAndOpenX()">📋 コピーしてXを開く</button>
+        <button class="btn bs" onclick="regenTweet(this)">🔄 再生成</button>
       </div>
     </div>
+
+    <!-- はてなブログ記事 -->
+    <div class="card" id="blogCard" style="display:none">
+      <div class="card-title">📝 はてなブログ用 Markdown記事</div>
+      <div class="output-header">
+        <span class="output-label">コピーしてはてなブログに貼り付け</span>
+        <span class="char-count" id="blogCount">0文字</span>
+      </div>
+      <div class="output-area" id="blogOutput" style="max-height:400px;overflow-y:auto;font-family:Menlo,monospace;font-size:12px"></div>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <button class="btn bs" style="flex:1;justify-content:center;min-width:120px" onclick="copyBlog()">📋 記事をコピー</button>
+        <button class="btn bs" onclick="downloadBlog()">💾 保存</button>
+        <button class="btn bs" onclick="regenBlog(this)">🔄 再生成</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
-<!-- Tweet Modal -->
-<div class="modal-overlay" id="tweetModal" style="display:none" onclick="if(event.target===this)closeTweetModal()">
-  <div class="modal">
-    <div class="modal-title">🐦 ツイート内容</div>
-    <div class="tweet-box" id="tweetText" contenteditable="true"></div>
-    <div class="tweet-count"><span id="tweetCharCount">0</span>/280文字</div>
-    <div class="modal-actions">
-      <button class="btn bs" onclick="closeTweetModal()">閉じる</button>
-      <button class="btn btn-tw" onclick="copyTweet()">📋 コピーして投稿する</button>
+<!-- セール品検索タブ -->
+<div class="tab-content" id="tab-search">
+  <div class="search-wrap">
+    <div class="f" style="flex:1;min-width:200px">
+      <label>キーワード検索</label>
+      <input id="keywords" placeholder="例: モバイルバッテリー、イヤホン..." style="width:100%" onkeydown="if(event.key==='Enter')searchItems()">
+    </div>
+    <div class="f">
+      <label>カテゴリ</label>
+      <select id="category">
+        <option value="All">すべて</option>
+        <option value="Electronics">家電・カメラ</option>
+        <option value="Computers">パソコン・周辺機器</option>
+        <option value="HomeAndKitchen">ホーム・キッチン</option>
+        <option value="Fashion">ファッション</option>
+        <option value="Toys">おもちゃ・ゲーム</option>
+        <option value="Sports">スポーツ・アウトドア</option>
+        <option value="Beauty">美容・健康</option>
+      </select>
+    </div>
+    <div class="f">
+      <label>最低割引率</label>
+      <select id="minDiscount">
+        <option value="0">指定なし</option>
+        <option value="10">10%以上</option>
+        <option value="20">20%以上</option>
+        <option value="30" selected>30%以上</option>
+        <option value="50">50%以上</option>
+        <option value="70">70%以上</option>
+      </select>
+    </div>
+    <button class="btn bp" id="searchBtn" onclick="searchItems()">🔍 セール品を探す</button>
+  </div>
+  <div class="main" style="max-width:1100px">
+    <div id="resultsArea">
+      <div class="empty-state">
+        <div class="empty-icon">🏷️</div>
+        <div class="empty-title">セール品を検索してみましょう</div>
+        <div style="font-size:13px;color:var(--mu)">PA-API有効化後に使えます</div>
+      </div>
     </div>
   </div>
 </div>
@@ -355,13 +212,9 @@ textarea { resize: vertical; width: 100%; }
 <div class="toast" id="toast"></div>
 
 <script>
-// ── State ──
+let currentProduct = null;
 let allItems = [];
-let selectedItems = new Set();
-let articleCode = '';
-let currentTweetText = '';
 
-// ── Toast ──
 function toast(msg, err) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -371,365 +224,268 @@ function toast(msg, err) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-// ── Format helpers ──
+function switchTab(name, el) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+
 function fmtNum(n) { return Number(n).toLocaleString('ja-JP'); }
-function affLink(asin) { return `https://www.amazon.co.jp/dp/${asin}`; }
 
-// ── Search ──
-async function search() {
-  const keywords = document.getElementById('keywords').value.trim();
-  if (!keywords) { toast('キーワードを入力してください', 1); return; }
+function extractAsin(input) {
+  input = input.trim();
+  if (/^[A-Z0-9]{10}$/i.test(input)) return input.toUpperCase();
+  const m = input.match(/\/dp\/([A-Z0-9]{10})/i) || input.match(/\/gp\/product\/([A-Z0-9]{10})/i);
+  return m ? m[1].toUpperCase() : null;
+}
 
-  const btn = document.getElementById('searchBtn');
+function calcDisc() {
+  const o = parseFloat(document.getElementById('qOrig').value) || 0;
+  const s = parseFloat(document.getElementById('qSale').value) || 0;
+  const el = document.getElementById('discInfo');
+  if (!o || !s || s >= o) { el.style.display = 'none'; return; }
+  const d = Math.round((1 - s/o) * 100);
+  document.getElementById('discPct').textContent = `-${d}%`;
+  document.getElementById('discSale').textContent = `¥${fmtNum(s)}`;
+  document.getElementById('discOrig').textContent = `¥${fmtNum(o)}`;
+  document.getElementById('discSave').textContent = `¥${fmtNum(o - s)}お得！`;
+  el.style.display = 'flex';
+}
+
+async function generateAll() {
+  const urlInput = document.getElementById('qUrl').value.trim();
+  const orig = parseFloat(document.getElementById('qOrig').value) || 0;
+  const sale = parseFloat(document.getElementById('qSale').value) || 0;
+  const name = document.getElementById('qName').value.trim();
+  const note = document.getElementById('qNote').value.trim();
+
+  if (!urlInput) { toast('URLまたはASINを入力してください', 1); return; }
+  if (!sale) { toast('セール価格を入力してください', 1); return; }
+  const asin = extractAsin(urlInput);
+  if (!asin) { toast('有効なAmazon URLまたはASINを入力してください', 1); return; }
+
+  const affLink = `https://www.amazon.co.jp/dp/${asin}?tag=popo1215-22`;
+  const disc = orig && sale ? Math.round((1 - sale/orig) * 100) : 0;
+  const save = orig && sale ? orig - sale : 0;
+
+  const btn = document.getElementById('genBtn');
   btn.disabled = true;
-  btn.innerHTML = '<span class="sp"></span>検索中...';
+  btn.innerHTML = '<span class="sp"></span>AIが生成中...';
 
-  // Show skeletons
-  document.getElementById('resultsArea').innerHTML = `
-    <div class="loading-grid">
-      ${Array(6).fill(`
-        <div class="skeleton">
-          <div class="skeleton-img"></div>
-          <div class="skeleton-body">
-            <div class="skeleton-line"></div>
-            <div class="skeleton-line short"></div>
-            <div class="skeleton-line short"></div>
-          </div>
-        </div>`).join('')}
-    </div>`;
+  currentProduct = { asin, name, orig, sale, disc, save, affLink, note };
 
   try {
-    const res = await fetch('/.netlify/functions/paapi', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        keywords,
-        category: document.getElementById('category').value,
-        minDiscount: parseInt(document.getElementById('minDiscount').value),
-        sortBy: document.getElementById('sortBy').value,
-      })
-    });
+    const [tw, bl] = await Promise.all([
+      genTweetText(currentProduct),
+      genBlogText(currentProduct)
+    ]);
 
-    const data = await res.json();
-    if (!res.ok || data.error) throw new Error(data.error || 'APIエラー');
-
-    allItems = data.items || [];
-    selectedItems.clear();
-    updateSelectedUI();
-    renderResults();
-
-    if (allItems.length === 0) {
-      document.getElementById('resultsArea').innerHTML = `
-        <div class="empty-state">
-          <div class="empty-icon">😢</div>
-          <div class="empty-title">該当商品が見つかりませんでした</div>
-          <div class="empty-sub">キーワードや割引率の条件を変えて試してみてください</div>
-        </div>`;
-    }
+    document.getElementById('tweetOutput').textContent = tw;
+    document.getElementById('blogOutput').textContent = bl;
+    document.getElementById('tweetCard').style.display = 'block';
+    document.getElementById('blogCard').style.display = 'block';
+    updateTweetCount();
+    document.getElementById('blogCount').textContent = bl.length + '文字';
+    toast('生成完了！🎉');
+    document.getElementById('tweetCard').scrollIntoView({ behavior: 'smooth' });
   } catch(e) {
-    document.getElementById('resultsArea').innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">⚠️</div>
-        <div class="empty-title">エラーが発生しました</div>
-        <div class="empty-sub" style="color:var(--re)">${e.message}</div>
-      </div>`;
-    toast(e.message, 1);
+    toast('生成失敗: ' + e.message, 1);
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '🔍 セール品を探す';
+    btn.innerHTML = '🤖 X投稿文・ブログ記事を一括生成';
   }
 }
 
-// ── Render results ──
-function renderResults() {
-  const area = document.getElementById('resultsArea');
-  if (!allItems.length) return;
+async function genTweetText(p) {
+  const prompt = `あなたはAmazonアフィリエイトの投稿プロです。
+以下の商品情報でX（Twitter）投稿文を日本語で作成してください。
 
-  const saving = item => item.originalPrice && item.price ? item.originalPrice - item.price : 0;
+ASIN: ${p.asin}
+商品名: ${p.name || '（ASINから推測）'}
+セール価格: ¥${fmtNum(p.sale)}
+定価: ${p.orig ? '¥'+fmtNum(p.orig) : '不明'}
+割引率: ${p.disc}%OFF
+節約額: ${p.save > 0 ? '¥'+fmtNum(p.save) : '不明'}
+リンク: ${p.affLink}
+補足: ${p.note || 'なし'}
 
-  area.innerHTML = `
-    <div class="results-header">
-      <div class="results-title">検索結果</div>
-      <div class="results-count">${allItems.length}件 · 割引率の高い順</div>
-    </div>
-    <div class="product-grid">
-      ${allItems.map(item => `
-        <div class="product-card ${selectedItems.has(item.asin) ? 'selected' : ''}" id="card-${item.asin}">
-          ${item.image
-            ? `<img class="card-img" src="${item.image}" alt="${item.title}" loading="lazy">`
-            : `<div class="card-img-ph">📦</div>`}
-          <div class="card-body">
-            <div class="card-title">${item.title}</div>
-            <div class="card-badges">
-              ${item.discount > 0 ? `<span class="disc-badge">-${item.discount}%</span>` : ''}
-              ${item.price ? `<span class="price-now">¥${fmtNum(item.price)}</span>` : ''}
-              ${item.originalPrice ? `<span class="price-orig">¥${fmtNum(item.originalPrice)}</span>` : ''}
-            </div>
-            ${saving(item) > 0 ? `<div class="price-save">¥${fmtNum(saving(item))}お得！</div>` : ''}
-            ${item.features.length ? `<div class="card-features">${item.features.slice(0,2).join(' · ')}</div>` : ''}
-            <div class="card-actions">
-              <button class="btn btn-tw" onclick="openTweetModal('${item.asin}')">
-                🐦 ツイート文を作成
-              </button>
-              <button class="btn ${selectedItems.has(item.asin) ? 'btn-gr' : 'bs'}"
-                onclick="toggleSelect('${item.asin}')">
-                ${selectedItems.has(item.asin) ? '✅ 記事に追加済み' : '📝 記事に追加'}
-              </button>
-              <a href="${item.url}" target="_blank"
-                style="display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;border-radius:8px;background:transparent;border:1px solid var(--bd);color:var(--am);text-decoration:none;font-size:12px;font-weight:700;transition:all .15s"
-                onmouseover="this.style.background='rgba(255,153,0,.1)'"
-                onmouseout="this.style.background='transparent'">
-                🛒 Amazonで見る
-              </a>
-            </div>
-          </div>
-        </div>
-      `).join('')}
-    </div>`;
+【必須ルール】
+- 全体200文字以内（リンク含む）
+- 冒頭に【${p.disc}%OFF🔥】などの目を引くバッジ
+- 価格と節約額を明記
+- 緊急性を演出（⏰ 数量限定 など）
+- 末尾に必ずこの順番で入れる：
+  ${p.affLink}
+  #PR #AD #Amazon #セール #激安 #お得情報
+- そのまま投稿できる形式（マークダウン不使用）`;
+  return await callClaude(prompt);
 }
 
-// ── Select items for article ──
-function toggleSelect(asin) {
-  if (selectedItems.has(asin)) {
-    selectedItems.delete(asin);
-  } else {
-    if (selectedItems.size >= 10) { toast('最大10件まで選択できます', 1); return; }
-    selectedItems.add(asin);
-  }
-  updateSelectedUI();
-  renderResults();
+async function genBlogText(p) {
+  const date = new Date().toLocaleDateString('ja-JP');
+  const prompt = `あなたはAmazonアフィリエイトのプロブロガーです。
+以下の商品情報ではてなブログ用Markdown記事を作成してください。
+
+ASIN: ${p.asin}
+商品名: ${p.name || '（ASINから推測）'}
+セール価格: ¥${fmtNum(p.sale)}
+定価: ${p.orig ? '¥'+fmtNum(p.orig) : '不明'}
+割引率: ${p.disc}%OFF
+節約額: ${p.save > 0 ? '¥'+fmtNum(p.save) : '不明'}
+リンク: ${p.affLink}
+補足: ${p.note || 'なし'}
+作成日: ${date}
+
+【必須構成】
+1. SEOタイトル（# h1）
+2. 冒頭に必ず以下を入れる（変更禁止）：
+   > ※本記事にはアフィリエイトリンクが含まれます。 #AD
+3. リード文（100文字・読者の共感を呼ぶ）
+4. 商品概要（価格・割引率・特徴）
+5. こんな人におすすめ（箇条書き）
+6. スペック・特徴（商品名から推測して記載）
+7. メリット・デメリット
+8. 購入リンク：
+   [🛒 Amazonで購入する（¥${fmtNum(p.sale)}）](${p.affLink})
+9. まとめ
+
+【ルール】
+- Markdownのみ・HTMLタグ不使用
+- 1500〜2000文字
+- 購買意欲を高める文体`;
+  return await callClaude(prompt);
 }
 
-function updateSelectedUI() {
-  const count = selectedItems.size;
-  document.getElementById('selectedCount').textContent = count + '件';
-  document.getElementById('articleBtn').disabled = count === 0;
-
-  const titles = allItems
-    .filter(i => selectedItems.has(i.asin))
-    .map(i => i.title.slice(0, 20) + '...')
-    .join('、');
-  document.getElementById('selectedTitles').textContent = titles || 'なし';
-}
-
-function openArticlePanel() {
-  if (selectedItems.size === 0) return;
-  document.getElementById('articlePanel').style.display = 'block';
-  document.getElementById('articlePanel').scrollIntoView({ behavior: 'smooth' });
-}
-
-// ── Tweet Modal ──
-function openTweetModal(asin) {
-  const item = allItems.find(i => i.asin === asin);
-  if (!item) return;
-
-  const saving = item.originalPrice && item.price ? item.originalPrice - item.price : 0;
-  const discStr = item.discount > 0 ? `【${item.discount}%OFF🔥】` : '';
-  const priceStr = item.price ? `¥${fmtNum(item.price)}` : '';
-  const origStr = item.originalPrice ? `（定価¥${fmtNum(item.originalPrice)}）` : '';
-  const saveStr = saving > 0 ? `\n💰 ¥${fmtNum(saving)}もお得！` : '';
-
-  const tweet = `${discStr} ${item.title.slice(0, 40)}…
-
-${priceStr}${origStr}${saveStr}
-
-⏰ セール終了前にチェック！
-${item.url}
-
-#Amazon #セール #激安 #お得`;
-
-  document.getElementById('tweetText').textContent = tweet;
-  updateTweetCount();
-  document.getElementById('tweetModal').style.display = 'flex';
-}
-
-function closeTweetModal() {
-  document.getElementById('tweetModal').style.display = 'none';
+async function callClaude(prompt) {
+  const res = await fetch('/.netlify/functions/paapi', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'claude', prompt })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+  return data.text || '';
 }
 
 function updateTweetCount() {
-  const text = document.getElementById('tweetText').textContent;
-  document.getElementById('tweetCharCount').textContent = text.length;
+  const text = document.getElementById('tweetOutput').textContent;
+  const el = document.getElementById('tweetCount');
+  el.textContent = text.length + '文字';
+  el.className = 'char-count' + (text.length > 280 ? ' over' : '');
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('tweetText').addEventListener('input', updateTweetCount);
-});
-
-function copyTweet() {
-  const text = document.getElementById('tweetText').textContent;
+function copyAndOpenX() {
+  const text = document.getElementById('tweetOutput').textContent;
   navigator.clipboard.writeText(text).then(() => {
     toast('コピーしました！Xに貼り付けて投稿してください 🐦');
-    closeTweetModal();
     window.open('https://twitter.com/intent/tweet', '_blank');
   });
 }
 
-// ── Article Generation ──
-async function generateArticle() {
-  const selectedProducts = allItems.filter(i => selectedItems.has(i.asin));
-  if (!selectedProducts.length) { toast('商品を選択してください', 1); return; }
+function copyBlog() {
+  const text = document.getElementById('blogOutput').textContent;
+  navigator.clipboard.writeText(text).then(() => toast('記事をコピーしました！'));
+}
 
-  const btn = document.getElementById('genArtBtn');
+function downloadBlog() {
+  const text = document.getElementById('blogOutput').textContent;
+  if (!text) { toast('まず生成してください', 1); return; }
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'blog-' + Date.now() + '.md';
+  a.click();
+  toast('保存しました！');
+}
+
+async function regenTweet(btn) {
+  if (!currentProduct) { toast('先に商品情報を入力してください', 1); return; }
+  btn.disabled = true; btn.textContent = '生成中...';
+  try {
+    const tw = await genTweetText(currentProduct);
+    document.getElementById('tweetOutput').textContent = tw;
+    updateTweetCount();
+    toast('再生成しました！');
+  } catch(e) { toast('失敗: ' + e.message, 1); }
+  finally { btn.disabled = false; btn.textContent = '🔄 再生成'; }
+}
+
+async function regenBlog(btn) {
+  if (!currentProduct) { toast('先に商品情報を入力してください', 1); return; }
+  btn.disabled = true; btn.textContent = '生成中...';
+  try {
+    const bl = await genBlogText(currentProduct);
+    document.getElementById('blogOutput').textContent = bl;
+    document.getElementById('blogCount').textContent = bl.length + '文字';
+    toast('再生成しました！');
+  } catch(e) { toast('失敗: ' + e.message, 1); }
+  finally { btn.disabled = false; btn.textContent = '🔄 再生成'; }
+}
+
+async function searchItems() {
+  const keywords = document.getElementById('keywords').value.trim();
+  if (!keywords) { toast('キーワードを入力してください', 1); return; }
+  const btn = document.getElementById('searchBtn');
   btn.disabled = true;
-  btn.innerHTML = '<span class="sp"></span>生成中...';
-
-  const fmt = document.getElementById('artFmt').value;
-  const len = document.getElementById('artLen').value;
-  const lenMap = { short: '1000文字', medium: '2000文字', long: '3000文字' };
-  const fmtNote = fmt === 'html'
-    ? 'HTMLのみで出力。マークダウン記法は使わないこと。購入ボタンはstyle付きのaタグで作ること。'
-    : 'Markdownのみで出力。HTMLタグは使わないこと。';
-
-  const productInfo = selectedProducts.map((p, i) => {
-    const saving = p.originalPrice && p.price ? p.originalPrice - p.price : 0;
-    return `商品${i+1}: ${p.title}
-価格: ${p.price ? '¥'+fmtNum(p.price) : '不明'}${p.originalPrice ? '（定価¥'+fmtNum(p.originalPrice)+'）' : ''}
-割引: ${p.discount}%OFF${saving > 0 ? '（¥'+fmtNum(saving)+'お得）' : ''}
-特徴: ${p.features.slice(0,3).join('、') || 'なし'}
-リンク: ${p.url}`;
-  }).join('\n\n---\n\n');
-
+  btn.innerHTML = '<span class="sp"></span>検索中...';
+  document.getElementById('resultsArea').innerHTML = `<div class="loading-grid">${Array(6).fill('<div class="skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>').join('')}</div>`;
   try {
     const res = await fetch('/.netlify/functions/paapi', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'generate_article', productInfo, fmt, len, lenMap: lenMap[len], fmtNote })
+      body: JSON.stringify({ keywords, category: document.getElementById('category').value, minDiscount: parseInt(document.getElementById('minDiscount').value), sortBy: 'Relevance' })
     });
-
-    // If the function doesn't handle article generation, call Claude directly
-    // For now we'll generate client-side with a simple template
-    const article = buildArticle(selectedProducts, fmt);
-    articleCode = article;
-
-    document.getElementById('articleOutput').style.display = 'block';
-    document.getElementById('articleText').textContent = article;
-    toast('記事を生成しました！');
-  } catch(e) {
-    // Fallback: generate simple article
-    articleCode = buildArticle(selectedProducts, fmt);
-    document.getElementById('articleOutput').style.display = 'block';
-    document.getElementById('articleText').textContent = articleCode;
-    toast('記事を生成しました！');
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '🤖 AIで記事生成';
-  }
-}
-
-function buildArticle(products, fmt) {
-  const date = new Date().toLocaleDateString('ja-JP');
-  if (fmt === 'html') {
-    const cards = products.map(p => {
-      const saving = p.originalPrice && p.price ? p.originalPrice - p.price : 0;
-      return `<div style="border:2px solid #FF9900;border-radius:12px;padding:20px;margin:20px 0;background:#fffdf7">
-  ${p.discount > 0 ? `<span style="display:inline-block;background:#ff4d6d;color:#fff;font-size:12px;font-weight:800;padding:3px 12px;border-radius:20px;margin-bottom:12px">🏷 ${p.discount}%OFF セール中！</span>` : ''}
-  <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">
-    ${p.image ? `<img src="${p.image}" width="120" height="120" style="object-fit:contain;border-radius:8px;background:#fff;border:1px solid #eee">` : ''}
-    <div style="flex:1;min-width:180px">
-      <h3 style="font-size:16px;margin:0 0 8px">${p.title}</h3>
-      ${p.price ? `<div><span style="font-size:26px;font-weight:800;color:#c0392b">¥${fmtNum(p.price)}</span>${p.originalPrice ? ` <span style="text-decoration:line-through;color:#999;font-size:13px">¥${fmtNum(p.originalPrice)}</span>` : ''}${saving > 0 ? ` <span style="color:#27ae60;font-size:12px;font-weight:700">（¥${fmtNum(saving)}お得！）</span>` : ''}</div>` : ''}
-      ${p.features.length ? `<ul style="margin:10px 0 0 18px;font-size:13px">${p.features.slice(0,3).map(f=>`<li>${f}</li>`).join('')}</ul>` : ''}
-    </div>
-  </div>
-  <div style="text-align:center;margin-top:16px">
-    <a href="${p.url}" target="_blank" style="display:inline-block;background:linear-gradient(135deg,#FF9900,#e47911);color:#000;padding:14px 32px;border-radius:10px;text-decoration:none;font-weight:800;font-size:15px">🛒 Amazonで購入する（¥${fmtNum(p.price || 0)}）</a>
-  </div>
-</div>`;
-    }).join('\n');
-
-    return `<h1>【${date}】Amazonセール情報まとめ！今すぐチェックすべき激安商品${products.length}選</h1>
-
-<p>こんにちは！今日はAmazonで見つけた激安セール情報をまとめてお届けします。数量限定のものもあるので、気になる商品はお早めに！</p>
-
-${cards}
-
-<h2>まとめ</h2>
-<p>今回ご紹介した商品は、どれも割引率が高くコスパ抜群のアイテムです。セール期間中・在庫があるうちにぜひチェックしてみてください！</p>`;
-  } else {
-    const cards = products.map(p => {
-      const saving = p.originalPrice && p.price ? p.originalPrice - p.price : 0;
-      return `## ${p.title}
-
-${p.discount > 0 ? `🏷 **${p.discount}%OFF セール中！**\n` : ''}${p.price ? `**¥${fmtNum(p.price)}**${p.originalPrice ? ` ~~¥${fmtNum(p.originalPrice)}~~` : ''}${saving > 0 ? ` （¥${fmtNum(saving)}お得！）` : ''}` : ''}
-
-${p.features.slice(0,3).map(f=>`- ${f}`).join('\n')}
-
-[🛒 Amazonで購入する（¥${fmtNum(p.price || 0)}）](${p.url})`;
-    }).join('\n\n---\n\n');
-
-    return `# 【${date}】Amazonセール情報まとめ！今すぐチェックすべき激安商品${products.length}選
-
-こんにちは！今日はAmazonで見つけた激安セール情報をまとめてお届けします。
-
-${cards}
-
-## まとめ
-
-今回ご紹介した商品は、どれも割引率が高くコスパ抜群のアイテムです。セール期間中・在庫があるうちにぜひチェックしてみてください！`;
-  }
-}
-
-function copyArticle() {
-  navigator.clipboard.writeText(articleCode).then(() => toast('コピーしました！'));
-}
-function downloadArticle() {
-
-// Tab Switching
-function switchTab(tab) {
-  const searchTab = document.getElementById("searchTab");
-  const urlTab = document.getElementById("urlTab");
-  const buttons = document.querySelectorAll(".tab-btn");
-  if (tab === "search") {
-    searchTab.style.display = "flex";
-    urlTab.style.display = "none";
-    buttons[0].style.color = "var(--tx)";
-    buttons[0].style.borderBottomColor = "var(--am)";
-    buttons[1].style.color = "var(--mu)";
-    buttons[1].style.borderBottomColor = "transparent";
-  } else {
-    searchTab.style.display = "none";
-    urlTab.style.display = "flex";
-    buttons[0].style.color = "var(--mu)";
-    buttons[0].style.borderBottomColor = "transparent";
-    buttons[1].style.color = "var(--tx)";
-    buttons[1].style.borderBottomColor = "var(--am)";
-  }
-}
-
-async function scrapeProduct() {
-  const url = document.getElementById("productUrl").value.trim();
-  if (!url) { toast("URLを入力してください", 1); return; }
-  const btn = document.getElementById("scrapeBtn");
-  btn.disabled = true;
-  btn.innerHTML = "<span class="sp"></span> 解析中...";
-  try {
-    const response = await fetch("/.netlify/functions/scrape-product", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url })
-    });
-    const data = await response.json();
-    if (!response.ok) { toast(data.error || "解析に失敗しました", 1); return; }
-    const product = data.product;
-    allItems = [product];
+    const data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error || 'APIエラー');
+    allItems = data.items || [];
     renderResults();
-    toast("商品情報を取得しました！");
-    document.getElementById("resultsArea").scrollIntoView({ behavior: "smooth" });
+    if (!allItems.length) document.getElementById('resultsArea').innerHTML = `<div class="empty-state"><div class="empty-icon">😢</div><div class="empty-title">該当商品が見つかりませんでした</div></div>`;
   } catch(e) {
-    toast(e.message, 1);
+    document.getElementById('resultsArea').innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">エラー</div><div style="color:var(--re);font-size:13px">${e.message}</div></div>`;
   } finally {
-    btn.disabled = false;
-    btn.innerHTML = "🔍 URLを解析";
+    btn.disabled = false; btn.innerHTML = '🔍 セール品を探す';
   }
 }
-  const ext = document.getElementById('artFmt').value === 'html' ? 'html' : 'md';
-  const blob = new Blob([articleCode], { type: 'text/plain;charset=utf-8' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `amazon-sale-${Date.now()}.${ext}`;
-  a.click();
-  toast('保存しました！');
+
+function renderResults() {
+  const area = document.getElementById('resultsArea');
+  const saving = i => i.originalPrice && i.price ? i.originalPrice - i.price : 0;
+  area.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-size:15px;font-weight:700">検索結果</div>
+      <div style="font-size:12px;color:var(--mu)">${allItems.length}件</div>
+    </div>
+    <div class="product-grid">
+      ${allItems.map(item => `
+        <div class="product-card">
+          ${item.image ? `<img class="card-img" src="${item.image}" alt="${item.title}" loading="lazy">` : `<div class="card-img-ph">📦</div>`}
+          <div class="card-body">
+            <div class="card-title2">${item.title}</div>
+            <div class="card-badges">
+              ${item.discount > 0 ? `<span class="badge-disc">-${item.discount}%</span>` : ''}
+              ${item.price ? `<span class="badge-price">¥${fmtNum(item.price)}</span>` : ''}
+              ${item.originalPrice ? `<span class="badge-orig">¥${fmtNum(item.originalPrice)}</span>` : ''}
+            </div>
+            ${saving(item) > 0 ? `<div style="font-size:11px;color:var(--gr);font-weight:700">¥${fmtNum(saving(item))}お得！</div>` : ''}
+            <div class="card-actions">
+              <button class="btn btn-tw" onclick="quickPost('${item.asin}','${encodeURIComponent(item.title)}',${item.price||0},${item.originalPrice||0})">⚡ 投稿文・記事を生成</button>
+              <a href="${item.url}" target="_blank" style="display:flex;align-items:center;justify-content:center;padding:7px;border-radius:8px;border:1px solid var(--bd);color:var(--am);text-decoration:none;font-size:11px;font-weight:700">🛒 Amazonで見る</a>
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function quickPost(asin, encodedName, price, orig) {
+  document.getElementById('qUrl').value = asin;
+  document.getElementById('qName').value = decodeURIComponent(encodedName);
+  document.getElementById('qSale').value = price;
+  document.getElementById('qOrig').value = orig;
+  calcDisc();
+  switchTab('quick', document.getElementById('btn-quick'));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  generateAll();
 }
 </script>
 </body>
