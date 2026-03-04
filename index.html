@@ -511,8 +511,7 @@ async function postToHatena() {
     const res = await fetch('https://amazon-sale-api.bulibuli-mushi.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'hatena-post', title, body, hatenaId, blogId })
-    });
+      body: JSON.stringify({ action: 'hatena-post', title, body, hatenaId, blogId, category: 'Amazon' });
     const data = await res.json();
     if (data.error) throw new Error(data.error);
     toast('はてなブログに投稿しました！🎉');
