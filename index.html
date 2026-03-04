@@ -360,7 +360,7 @@ ASIN: ${p.asin}
 }
 
 async function callClaude(prompt) {
-  const res = await fetch('/.netlify/functions/paapi', {
+  const res = await fetch('https://amazon-sale-api.bulibuli-mushi.workers.dev', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'claude', prompt })
@@ -433,7 +433,7 @@ async function searchItems() {
   btn.innerHTML = '<span class="sp"></span>検索中...';
   document.getElementById('resultsArea').innerHTML = `<div class="loading-grid">${Array(6).fill('<div class="skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>').join('')}</div>`;
   try {
-    const res = await fetch('/.netlify/functions/paapi', {
+    const res = await fetch('https://amazon-sale-api.bulibuli-mushi.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ keywords, category: document.getElementById('category').value, minDiscount: parseInt(document.getElementById('minDiscount').value), sortBy: 'Relevance' })
