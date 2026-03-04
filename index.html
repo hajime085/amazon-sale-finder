@@ -369,7 +369,11 @@ ASIN: ${p.asin}
 
 ## 💰 価格情報
 
-> 🔥 **-${p.disc}%**　~~¥${fmtNum(p.orig)}~~ → **¥${fmtNum(p.sale)}**　**¥${fmtNum(p.save)}お得！**
+<div style="background:#fff8f8;border:2px solid #e53935;border-radius:10px;padding:16px 20px;margin:12px 0">
+<div><span style="background:#e53935;color:#fff;font-weight:bold;font-size:16px;padding:3px 12px;border-radius:20px;margin-right:10px">-${p.disc}%</span><span style="font-size:26px;font-weight:bold;color:#e53935">¥${fmtNum(p.sale)}</span><span style="font-size:12px;color:#999">税込</span></div>
+<div style="margin-top:6px"><span style="font-size:13px;color:#888">参考価格: </span><span style="font-size:13px;color:#888;text-decoration:line-through">¥${fmtNum(p.orig)}</span></div>
+<div style="margin-top:6px;font-size:13px;color:#00897b;font-weight:bold">✅ ¥${fmtNum(p.save)}お得！</div>
+</div>
 
 ## こんな人におすすめ
 
