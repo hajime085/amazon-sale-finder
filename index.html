@@ -147,21 +147,21 @@ textarea { resize: vertical; }
       </div>
     </div>
 
-   <!-- はてなブログ記事 -->
-<div class="card" id="blogCard" style="display:none">
-  <div class="card-title">📝 はてなブログ用 Markdown記事</div>
-  <div class="output-header">
-    <span class="output-label">コピーしてはてなブログに貼り付け</span>
-    <span class="char-count" id="blogCount">0文字</span>
-  </div>
-  <div class="output-area" id="blogOutput" style="max-height:400px;overflow-y:auto;font-family:Menlo,monospace;font-size:12px"></div>
-  <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
-    <button class="btn bs" style="flex:1;justify-content:center;min-width:120px" onclick="copyBlog()">📋 記事をコピー</button>
-    <button class="btn bs" onclick="downloadBlog()">💾 保存</button>
-    <button class="btn bs" onclick="regenBlog(this)">🔄 再生成</button>
-    <button class="btn bp" style="flex:1;justify-content:center;min-width:140px" id="hatenaBtn" onclick="postToHatena()">📝 はてなブログに投稿</button>
-  </div>
-</div>
+    <!-- はてなブログ記事 -->
+    <div class="card" id="blogCard" style="display:none">
+      <div class="card-title">📝 はてなブログ用 Markdown記事</div>
+      <div class="output-header">
+        <span class="output-label">コピーしてはてなブログに貼り付け</span>
+        <span class="char-count" id="blogCount">0文字</span>
+      </div>
+      <div class="output-area" id="blogOutput" style="max-height:400px;overflow-y:auto;font-family:Menlo,monospace;font-size:12px"></div>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <button class="btn bs" style="flex:1;justify-content:center;min-width:120px" onclick="copyBlog()">📋 記事をコピー</button>
+        <button class="btn bs" onclick="downloadBlog()">💾 保存</button>
+        <button class="btn bs" onclick="regenBlog(this)">🔄 再生成</button>
+        <button class="btn bp" style="flex:1;justify-content:center;min-width:140px" id="hatenaBtn" onclick="postToHatena()">📝 はてなブログに投稿</button>
+      </div>
+    </div>
 
   </div>
 </div>
@@ -213,6 +213,10 @@ textarea { resize: vertical; }
 <div class="toast" id="toast"></div>
 
 <script>
+const WORKER_URL = 'https://amazon-sale-api.bulibuli-mushi.workers.dev';
+const HATENA_ID = 'enjoy-box';
+const BLOG_ID = 'popo-1215.hatenablog.com';
+
 let currentProduct = null;
 let allItems = [];
 
@@ -358,12 +362,13 @@ ASIN: ${p.asin}
 【ルール】
 - Markdownのみ・HTMLタグ不使用
 - 1500〜2000文字
-- 購買意欲を高める文体`;
+- 購買意欲を高める文体
+- 各セクションは必ず改行で区切ること`;
   return await callClaude(prompt);
 }
 
 async function callClaude(prompt) {
-  const res = await fetch('https://amazon-sale-api.bulibuli-mushi.workers.dev', {
+  const res = await fetch(WORKER_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'claude', prompt })
@@ -428,6 +433,49 @@ async function regenBlog(btn) {
   finally { btn.disabled = false; btn.textContent = '🔄 再生成'; }
 }
 
+async function postToHatena() {
+  if (!currentProduct) { toast('先に商品情報を入力してください', 1); return; }
+  const title = document.getElementById('blogOutput').textContent.split('\n')[0].replace(/^#\s*/, '').trim();
+  const body = document.getElementById('blogOutput').textContent;
+  if (!body) { toast('先にブログ記事を生成してください', 1); return; }
+
+  const btn = document.getElementById('hatenaBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="sp"></span>カテゴリ判別中...';
+
+  try {
+    // AIでカテゴリ自動判別
+    const categoryPrompt = `以下の商品名から最も適切なカテゴリを1つだけ選んで、カテゴリ名のみ出力してください。
+商品名: ${currentProduct.name || title}
+選択肢: 家電・ガジェット, 食品・日用品, 美容・健康, ファッション, スポーツ・アウトドア, その他セール
+カテゴリ名のみ出力（説明不要）:`;
+    const category = (await callClaude(categoryPrompt)).trim().split('\n')[0];
+
+    btn.innerHTML = '<span class="sp"></span>投稿中...';
+
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'hatena-post',
+        title,
+        body,
+        hatenaId: HATENA_ID,
+        blogId: BLOG_ID,
+        category
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    toast(`投稿しました！🎉 カテゴリ: ${category}`);
+  } catch(e) {
+    toast('投稿失敗: ' + e.message, 1);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '📝 はてなブログに投稿';
+  }
+}
+
 async function searchItems() {
   const keywords = document.getElementById('keywords').value.trim();
   if (!keywords) { toast('キーワードを入力してください', 1); return; }
@@ -436,7 +484,7 @@ async function searchItems() {
   btn.innerHTML = '<span class="sp"></span>検索中...';
   document.getElementById('resultsArea').innerHTML = `<div class="loading-grid">${Array(6).fill('<div class="skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>').join('')}</div>`;
   try {
-    const res = await fetch('https://amazon-sale-api.bulibuli-mushi.workers.dev', {
+    const res = await fetch(WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ keywords, category: document.getElementById('category').value, minDiscount: parseInt(document.getElementById('minDiscount').value), sortBy: 'Relevance' })
@@ -492,36 +540,6 @@ function quickPost(asin, encodedName, price, orig) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   generateAll();
 }
-async function postToHatena() {
-  if (!currentProduct) { toast('先に商品情報を入力してください', 1); return; }
-  const title = document.getElementById('blogOutput').textContent.split('\n')[0].replace(/^#\s*/, '').trim();
-  const body = document.getElementById('blogOutput').textContent;
-  if (!body) { toast('先にブログ記事を生成してください', 1); return; }
-
-  const hatenaId = prompt('はてなID（例: hajime085）を入力してください');
-  if (!hatenaId) return;
-  const blogId = prompt('ブログID（例: hajime085.hatenablog.com）を入力してください');
-  if (!blogId) return;
-
-  const btn = document.getElementById('hatenaBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="sp"></span>投稿中...';
-
-  try {
-    const res = await fetch('https://amazon-sale-api.bulibuli-mushi.workers.dev', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'hatena-post', title, body, hatenaId, blogId, category: 'Amazon' });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error);
-    toast('はてなブログに投稿しました！🎉');
-  } catch(e) {
-    toast('投稿失敗: ' + e.message, 1);
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '📝 はてなブログに投稿';
-  }
-}  
 </script>
 </body>
 </html>
