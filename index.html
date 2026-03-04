@@ -79,6 +79,7 @@ textarea { resize: vertical; }
 .skeleton-line { height: 12px; background: var(--s2); border-radius: 6px; animation: pulse 1.5s infinite; }
 .skeleton-line.short { width: 60%; }
 @keyframes pulse { 0%,100%{opacity:.6} 50%{opacity:1} }
+.thumb-preview { width: 100%; max-width: 200px; height: 200px; object-fit: contain; background: #fff; border-radius: 10px; padding: 8px; display: none; margin: 0 auto 12px; border: 2px solid var(--am); }
 @media (max-width: 600px) { .row2 { grid-template-columns: 1fr; } .product-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
@@ -94,16 +95,15 @@ textarea { resize: vertical; }
   <button class="tab-nav-btn" id="btn-search" onclick="switchTab('search',this)">🔍 セール品検索</button>
 </div>
 
-<!-- 即時投稿作成タブ -->
 <div class="tab-content active" id="tab-quick">
   <div class="main">
-
     <div class="card">
       <div class="card-title">📦 商品情報を入力（3項目だけでOK）</div>
       <div class="field">
         <span class="label">Amazon URL または ASIN ※必須</span>
-        <input id="qUrl" placeholder="https://www.amazon.co.jp/dp/B07XK6Z87X または B07XK6Z87X">
+        <input id="qUrl" placeholder="https://www.amazon.co.jp/dp/B07XK6Z87X または B07XK6Z87X" oninput="previewThumb()">
       </div>
+      <img id="thumbPreview" class="thumb-preview" alt="商品画像プレビュー">
       <div class="row2">
         <div class="field">
           <span class="label">定価（円）</span>
@@ -133,7 +133,6 @@ textarea { resize: vertical; }
       </button>
     </div>
 
-    <!-- X投稿文 -->
     <div class="card" id="tweetCard" style="display:none">
       <div class="card-title">🐦 X（Twitter）投稿文</div>
       <div class="output-header">
@@ -147,7 +146,6 @@ textarea { resize: vertical; }
       </div>
     </div>
 
-    <!-- はてなブログ記事 -->
     <div class="card" id="blogCard" style="display:none">
       <div class="card-title">📝 はてなブログ用 Markdown記事</div>
       <div class="output-header">
@@ -162,11 +160,9 @@ textarea { resize: vertical; }
         <button class="btn bp" style="flex:1;justify-content:center;min-width:140px" id="hatenaBtn" onclick="postToHatena()">📝 はてなブログに投稿</button>
       </div>
     </div>
-
   </div>
 </div>
 
-<!-- セール品検索タブ -->
 <div class="tab-content" id="tab-search">
   <div class="search-wrap">
     <div class="f" style="flex:1;min-width:200px">
@@ -245,6 +241,19 @@ function extractAsin(input) {
   return m ? m[1].toUpperCase() : null;
 }
 
+function getAmazonImageUrl(asin) {
+  return `https://images-na.ssl-images-amazon.com/images/P/${asin}.jpg`;
+}
+
+function previewThumb() {
+  const asin = extractAsin(document.getElementById('qUrl').value);
+  const img = document.getElementById('thumbPreview');
+  if (!asin) { img.style.display = 'none'; return; }
+  img.src = getAmazonImageUrl(asin);
+  img.style.display = 'block';
+  img.onerror = () => { img.style.display = 'none'; };
+}
+
 function calcDisc() {
   const o = parseFloat(document.getElementById('qOrig').value) || 0;
   const s = parseFloat(document.getElementById('qSale').value) || 0;
@@ -271,6 +280,7 @@ async function generateAll() {
   if (!asin) { toast('有効なAmazon URLまたはASINを入力してください', 1); return; }
 
   const affLink = `https://www.amazon.co.jp/dp/${asin}?tag=popo1215-22`;
+  const imageUrl = getAmazonImageUrl(asin);
   const disc = orig && sale ? Math.round((1 - sale/orig) * 100) : 0;
   const save = orig && sale ? orig - sale : 0;
 
@@ -278,7 +288,7 @@ async function generateAll() {
   btn.disabled = true;
   btn.innerHTML = '<span class="sp"></span>AIが生成中...';
 
-  currentProduct = { asin, name, orig, sale, disc, save, affLink, note };
+  currentProduct = { asin, name, orig, sale, disc, save, affLink, imageUrl, note };
 
   try {
     const [tw, bl] = await Promise.all([
@@ -342,28 +352,66 @@ ASIN: ${p.asin}
 定価: ${p.orig ? '¥'+fmtNum(p.orig) : '不明'}
 割引率: ${p.disc}%OFF
 節約額: ${p.save > 0 ? '¥'+fmtNum(p.save) : '不明'}
-リンク: ${p.affLink}
+商品画像URL: ${p.imageUrl}
+購入リンク: ${p.affLink}
 補足: ${p.note || 'なし'}
 作成日: ${date}
 
-【必須構成】
-1. SEOタイトル（# h1）
-2. 冒頭に必ず以下を入れる（変更禁止）：
-   > ※本記事にはアフィリエイトリンクが含まれます。 #AD
-3. リード文（100文字・読者の共感を呼ぶ）
-4. 商品概要（価格・割引率・特徴）
-5. こんな人におすすめ（箇条書き）
-6. スペック・特徴（商品名から推測して記載）
-7. メリット・デメリット
-8. 購入リンク：
-   [🛒 Amazonで購入する（¥${fmtNum(p.sale)}）](${p.affLink})
-9. まとめ
+【必須構成・必ず守ること】
+
+# （SEOタイトルをここに）
+
+![商品画像](${p.imageUrl})
+
+> ※本記事にはアフィリエイトリンクが含まれます。 #AD
+
+（リード文100文字・読者の共感を呼ぶ内容）
+
+## 価格情報
+
+| 項目 | 内容 |
+|------|------|
+| 通常価格 | ¥${fmtNum(p.orig)} |
+| セール価格 | **¥${fmtNum(p.sale)}** |
+| 割引率 | **${p.disc}%OFF** |
+| 節約額 | ¥${fmtNum(p.save)} |
+
+## こんな人におすすめ
+
+- おすすめポイント1
+- おすすめポイント2
+- おすすめポイント3
+- おすすめポイント4
+- おすすめポイント5
+
+## スペック・特徴
+
+（商品名から推測して箇条書きで記載）
+
+## メリット・デメリット
+
+> 💡 **メリット**
+> - メリット1
+> - メリット2
+> - メリット3
+
+> ⚠️ **デメリット**
+> - デメリット1
+> - デメリット2
+
+## まとめ・購入はこちら
+
+（まとめ文を2〜3文で）
+
+[![Amazonで購入する](${p.imageUrl})](${p.affLink})
+
+[🛒 Amazonで購入する（¥${fmtNum(p.sale)}）](${p.affLink})
 
 【ルール】
 - Markdownのみ・HTMLタグ不使用
-- 1500〜2000文字
+- 各セクションは必ず空行で区切ること
 - 購買意欲を高める文体
-- 各セクションは必ず改行で区切ること`;
+- 上記の構成テンプレートに沿って肉付けして出力すること`;
   return await callClaude(prompt);
 }
 
@@ -444,7 +492,6 @@ async function postToHatena() {
   btn.innerHTML = '<span class="sp"></span>カテゴリ判別中...';
 
   try {
-    // AIでカテゴリ自動判別
     const categoryPrompt = `以下の商品名から最も適切なカテゴリを1つだけ選んで、カテゴリ名のみ出力してください。
 商品名: ${currentProduct.name || title}
 選択肢: 家電・ガジェット, 食品・日用品, 美容・健康, ファッション, スポーツ・アウトドア, その他セール
@@ -456,14 +503,7 @@ async function postToHatena() {
     const res = await fetch(WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'hatena-post',
-        title,
-        body,
-        hatenaId: HATENA_ID,
-        blogId: BLOG_ID,
-        category
-      })
+      body: JSON.stringify({ action: 'hatena-post', title, body, hatenaId: HATENA_ID, blogId: BLOG_ID, category })
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error);
@@ -536,6 +576,7 @@ function quickPost(asin, encodedName, price, orig) {
   document.getElementById('qSale').value = price;
   document.getElementById('qOrig').value = orig;
   calcDisc();
+  previewThumb();
   switchTab('quick', document.getElementById('btn-quick'));
   window.scrollTo({ top: 0, behavior: 'smooth' });
   generateAll();
