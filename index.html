@@ -481,6 +481,16 @@ async function regenBlog(btn) {
   finally { btn.disabled = false; btn.textContent = '🔄 再生成'; }
 }
 
+function guessCategory(name) {
+  if (!name) return 'その他セール';
+  if (/イヤホン|スピーカー|カメラ|PC|パソコン|タブレット|スマホ|充電|バッテリー|マウス|キーボード|モニター|プリンター|ルーター|SSD|HDD|ゲーム|テレビ|冷蔵庫|洗濯|掃除|炊飯|電子レンジ|エアコン|扇風機|照明|ランプ/i.test(name)) return '家電・ガジェット';
+  if (/シャンプー|コスメ|美容|スキンケア|化粧|サプリ|ビタミン|プロテイン|マスク|除菌|薬|医薬/i.test(name)) return '美容・健康';
+  if (/食品|お菓子|飲料|コーヒー|お茶|米|麺|調味料|缶詰|冷凍|ペットフード|日用品|洗剤|ティッシュ|トイレ/i.test(name)) return '食品・日用品';
+  if (/テント|アウトドア|登山|キャンプ|釣り|自転車|スポーツ|ヨガ|トレーニング|ランニング/i.test(name)) return 'スポーツ・アウトドア';
+  if (/服|シャツ|パンツ|ジャケット|バッグ|財布|靴|スニーカー|帽子|アクセサリー/i.test(name)) return 'ファッション';
+  return 'その他セール';
+}
+
 async function postToHatena() {
   if (!currentProduct) { toast('先に商品情報を入力してください', 1); return; }
   const title = document.getElementById('blogOutput').textContent.split('\n')[0].replace(/^#\s*/, '').trim();
@@ -489,22 +499,14 @@ async function postToHatena() {
 
   const btn = document.getElementById('hatenaBtn');
   btn.disabled = true;
-  btn.innerHTML = '<span class="sp"></span>カテゴリ判別中...';
+  btn.innerHTML = '<span class="sp"></span>投稿中...';
 
   try {
-    const categoryPrompt = `以下の商品名から最も適切なカテゴリを1つだけ選んで、カテゴリ名のみ出力してください。
-商品名: ${currentProduct.name || title}
-選択肢: 家電・ガジェット, 食品・日用品, 美容・健康, ファッション, スポーツ・アウトドア, その他セール
-カテゴリ名のみ出力（説明不要）:`;
-    const category = (await callClaude(categoryPrompt)).trim().split('\n')[0];
-
-    btn.innerHTML = '<span class="sp"></span>投稿中...';
-
+    const category = guessCategory(currentProduct.name || title);
     const res = await fetch(WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'hatena-post', title, body, hatenaId: HATENA_ID, blogId: BLOG_ID, category,
-  imageUrl: currentProduct.imageUrl })
+      body: JSON.stringify({ action: 'hatena-post', title, body, hatenaId: HATENA_ID, blogId: BLOG_ID, category, imageUrl: currentProduct.imageUrl })
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error);
