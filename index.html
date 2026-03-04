@@ -137,7 +137,7 @@ textarea { resize: vertical; }
     <div class="card" id="tweetCard" style="display:none">
       <div class="card-title">🐦 X（Twitter）投稿文</div>
       <div class="output-header">
-        <span class="output-label">#PR #AD 含む・200文字以内推奨</span>
+        <span class="output-label">#PR #AD 含む・140文字以内</span>
         <span class="char-count" id="tweetCount">0文字</span>
       </div>
       <div class="output-area" id="tweetOutput" contenteditable="true" oninput="updateTweetCount()"></div>
@@ -310,15 +310,17 @@ ASIN: ${p.asin}
 リンク: ${p.affLink}
 補足: ${p.note || 'なし'}
 
-【必須ルール】
-- 全体200文字以内（リンク含む）
-- 冒頭に【${p.disc}%OFF🔥】などの目を引くバッジ
-- 価格と節約額を明記
-- 緊急性を演出（⏰ 数量限定 など）
-- 末尾に必ずこの順番で入れる：
-  ${p.affLink}
-  #PR #AD #Amazon #セール #激安 #お得情報
-- そのまま投稿できる形式（マークダウン不使用）`;
+【厳守ルール】
+- 本文（リンク・ハッシュタグ除く）は必ず100文字以内に収めること
+- 本文・リンク・ハッシュタグを合計しても140文字以内にすること
+- 冒頭に【${p.disc}%OFF🔥】を入れる
+- 価格と節約額を必ず入れる
+- 緊急性を1フレーズだけ入れる（例：⏰在庫わずか！）
+- 末尾は必ず以下の形式で改行して入れる：
+${p.affLink}
+#PR #AD #Amazon #セール #激安
+- マークダウン不使用、そのまま投稿できる形式
+- 絶対に140文字を超えないこと。超えそうなら本文を削ること`;
   return await callClaude(prompt);
 }
 
@@ -372,7 +374,7 @@ function updateTweetCount() {
   const text = document.getElementById('tweetOutput').textContent;
   const el = document.getElementById('tweetCount');
   el.textContent = text.length + '文字';
-  el.className = 'char-count' + (text.length > 280 ? ' over' : '');
+  el.className = 'char-count' + (text.length > 140 ? ' over' : '');
 }
 
 function copyAndOpenX() {
