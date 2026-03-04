@@ -491,6 +491,37 @@ function quickPost(asin, encodedName, price, orig) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   generateAll();
 }
+async function postToHatena() {
+  if (!currentProduct) { toast('先に商品情報を入力してください', 1); return; }
+  const title = document.getElementById('blogOutput').textContent.split('\n')[0].replace(/^#\s*/, '').trim();
+  const body = document.getElementById('blogOutput').textContent;
+  if (!body) { toast('先にブログ記事を生成してください', 1); return; }
+
+  const hatenaId = prompt('はてなID（例: hajime085）を入力してください');
+  if (!hatenaId) return;
+  const blogId = prompt('ブログID（例: hajime085.hatenablog.com）を入力してください');
+  if (!blogId) return;
+
+  const btn = document.getElementById('hatenaBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="sp"></span>投稿中...';
+
+  try {
+    const res = await fetch('https://amazon-sale-api.bulibuli-mushi.workers.dev', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'hatena-post', title, body, hatenaId, blogId })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    toast('はてなブログに投稿しました！🎉');
+  } catch(e) {
+    toast('投稿失敗: ' + e.message, 1);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '📝 はてなブログに投稿';
+  }
+}  
 </script>
 </body>
 </html>
