@@ -154,11 +154,11 @@ textarea { resize: vertical; }
         <span class="output-label">コピーしてはてなブログに貼り付け</span>
         <span class="char-count" id="blogCount">0文字</span>
       </div>
-      <div class="output-area" id="blogOutput" style="max-height:400px;overflow-y:auto;font-family:Menlo,monospace;font-size:12px"></div>
       <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
         <button class="btn bs" style="flex:1;justify-content:center;min-width:120px" onclick="copyBlog()">📋 記事をコピー</button>
         <button class="btn bs" onclick="downloadBlog()">💾 保存</button>
         <button class="btn bs" onclick="regenBlog(this)">🔄 再生成</button>
+        <button class="btn bp" style="flex:1;justify-content:center;min-width:140px" id="hatenaBtn" onclick="postToHatena()">📝 はてなブログに投稿</button>
       </div>
     </div>
 
