@@ -359,22 +359,17 @@ ASIN: ${p.asin}
 
 【必須構成・必ず守ること】
 
-# （SEOタイトルをここに）
+# 【${p.disc}%OFF】（商品名を簡潔に）
 
-![商品画像](${p.imageUrl})
+[![商品画像](${p.imageUrl})](${p.affLink})
 
 > ※本記事にはアフィリエイトリンクが含まれます。 #AD
 
 （リード文100文字・読者の共感を呼ぶ内容）
 
-## 価格情報
+## 💰 価格情報
 
-| 項目 | 内容 |
-|------|------|
-| 通常価格 | ¥${fmtNum(p.orig)} |
-| セール価格 | **¥${fmtNum(p.sale)}** |
-| 割引率 | **${p.disc}%OFF** |
-| 節約額 | ¥${fmtNum(p.save)} |
+> 🔥 **-${p.disc}%**　~~¥${fmtNum(p.orig)}~~ → **¥${fmtNum(p.sale)}**　**¥${fmtNum(p.save)}お得！**
 
 ## こんな人におすすめ
 
@@ -405,13 +400,14 @@ ASIN: ${p.asin}
 
 [![Amazonで購入する](${p.imageUrl})](${p.affLink})
 
-[🛒 Amazonで購入する（¥${fmtNum(p.sale)}）](${p.affLink})
+[🛒 Amazonで今すぐ購入する（¥${fmtNum(p.sale)}）](${p.affLink})
 
 【ルール】
 - Markdownのみ・HTMLタグ不使用
 - 各セクションは必ず空行で区切ること
 - 購買意欲を高める文体
-- 上記の構成テンプレートに沿って肉付けして出力すること`;
+- 上記の構成テンプレートに沿って肉付けして出力すること
+- タイトルの（商品名を簡潔に）部分は実際の商品名に必ず置き換えること`;
   return await callClaude(prompt);
 }
 
