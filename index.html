@@ -503,7 +503,8 @@ async function postToHatena() {
     const res = await fetch(WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'hatena-post', title, body, hatenaId: HATENA_ID, blogId: BLOG_ID, category })
+      body: JSON.stringify({ action: 'hatena-post', title, body, hatenaId: HATENA_ID, blogId: BLOG_ID, category,
+  imageUrl: currentProduct.imageUrl })
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error);
