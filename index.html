@@ -10,7 +10,7 @@
   --bg: #0f0f13; --s1: #1a1a22; --s2: #22222e;
   --bd: #2e2e3e; --tx: #e8e8f0; --mu: #8888aa;
   --gr: #00d68f; --re: #ff4d6d; --bl: #4d9fff;
-  --tw: #1DA1F2;
+  --tw: #1DA1F2; --sub: #a78bfa;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system,'Helvetica Neue',sans-serif; background: var(--bg); color: var(--tx); font-size: 14px; line-height: 1.6; min-height: 100vh; }
@@ -26,8 +26,10 @@ input, select, textarea { background: var(--s2); border: 1px solid var(--bd); bo
 input:focus, select:focus, textarea:focus { outline: none; border-color: var(--am); }
 textarea { resize: vertical; }
 .label { font-size: 11px; color: var(--mu); font-weight: 700; text-transform: uppercase; letter-spacing: .4px; display: block; margin-bottom: 5px; }
+.label-opt { font-size: 10px; color: var(--sub); margin-left: 4px; font-weight: 600; text-transform: none; letter-spacing: 0; }
 .field { margin-bottom: 14px; }
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 .btn { padding: 10px 18px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 700; font-family: inherit; transition: all .15s; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
 .bp { background: var(--am); color: #000; }
 .bp:hover:not(:disabled) { background: var(--amd); transform: translateY(-1px); }
@@ -39,11 +41,33 @@ textarea { resize: vertical; }
 .btn-full { width: 100%; justify-content: center; padding: 12px; font-size: 14px; }
 .card { background: var(--s1); border: 1px solid var(--bd); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
 .card-title { font-size: 13px; font-weight: 700; color: var(--am); margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
-.disc-info { background: rgba(255,77,109,.1); border: 1px solid rgba(255,77,109,.3); border-radius: 10px; padding: 12px 16px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+
+/* 通常セール価格表示 */
+.disc-info { background: rgba(255,77,109,.1); border: 1px solid rgba(255,77,109,.3); border-radius: 10px; padding: 12px 16px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
 .disc-badge { background: var(--re); color: #fff; font-size: 20px; font-weight: 800; padding: 4px 14px; border-radius: 20px; }
 .price-now { font-size: 22px; font-weight: 800; color: #fff; }
 .price-orig { font-size: 13px; text-decoration: line-through; color: var(--mu); }
 .price-save { font-size: 12px; color: var(--gr); font-weight: 700; }
+
+/* 定期便・ポイント セクション */
+.section-divider { border: none; border-top: 1px solid var(--bd); margin: 16px 0; }
+.subscription-block { background: rgba(167,139,250,.07); border: 1px solid rgba(167,139,250,.25); border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; }
+.subscription-block-title { font-size: 11px; font-weight: 700; color: var(--sub); margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
+
+/* 実質価格まとめ表示 */
+.effective-panel { background: rgba(0,214,143,.08); border: 1px solid rgba(0,214,143,.3); border-radius: 12px; padding: 14px 18px; margin-bottom: 14px; }
+.effective-panel-title { font-size: 11px; font-weight: 700; color: var(--gr); margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
+.effective-rows { display: flex; flex-direction: column; gap: 6px; }
+.effective-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+.effective-row .eff-label { color: var(--mu); }
+.effective-row .eff-val { font-weight: 700; }
+.effective-row.highlight { background: rgba(0,214,143,.12); border-radius: 8px; padding: 6px 10px; }
+.effective-row.highlight .eff-label { color: var(--tx); font-weight: 700; }
+.effective-row.highlight .eff-val { color: var(--gr); font-size: 18px; }
+.eff-sub { font-size: 11px; color: var(--mu); margin-top: 2px; }
+.tag-sub { display: inline-block; background: rgba(167,139,250,.18); color: var(--sub); font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 10px; margin-left: 4px; vertical-align: middle; }
+.tag-pt { display: inline-block; background: rgba(255,153,0,.18); color: var(--am); font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 10px; margin-left: 4px; vertical-align: middle; }
+
 .output-area { background: var(--s2); border: 1px solid var(--bd); border-radius: 10px; padding: 16px; font-size: 13px; line-height: 1.8; white-space: pre-wrap; font-family: inherit; min-height: 80px; margin-top: 10px; }
 .output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
 .output-label { font-size: 11px; font-weight: 700; color: var(--mu); }
@@ -80,7 +104,7 @@ textarea { resize: vertical; }
 .skeleton-line.short { width: 60%; }
 @keyframes pulse { 0%,100%{opacity:.6} 50%{opacity:1} }
 .thumb-preview { width: 100%; max-width: 200px; height: 200px; object-fit: contain; background: #fff; border-radius: 10px; padding: 8px; display: none; margin: 0 auto 12px; border: 2px solid var(--am); }
-@media (max-width: 600px) { .row2 { grid-template-columns: 1fr; } .product-grid { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .row2 { grid-template-columns: 1fr; } .row3 { grid-template-columns: 1fr; } .product-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -98,28 +122,84 @@ textarea { resize: vertical; }
 <div class="tab-content active" id="tab-quick">
   <div class="main">
     <div class="card">
-      <div class="card-title">📦 商品情報を入力（3項目だけでOK）</div>
+      <div class="card-title">📦 商品情報を入力</div>
+
+      <!-- URL・ASIN -->
       <div class="field">
         <span class="label">Amazon URL または ASIN ※必須</span>
         <input id="qUrl" placeholder="https://www.amazon.co.jp/dp/B07XK6Z87X または B07XK6Z87X" oninput="previewThumb()">
       </div>
       <img id="thumbPreview" class="thumb-preview" alt="商品画像プレビュー">
+
+      <!-- 価格 -->
       <div class="row2">
         <div class="field">
           <span class="label">定価（円）</span>
-          <input type="number" id="qOrig" placeholder="5000" oninput="calcDisc()">
+          <input type="number" id="qOrig" placeholder="5000" oninput="calcAll()">
         </div>
         <div class="field">
           <span class="label">セール価格（円）※必須</span>
-          <input type="number" id="qSale" placeholder="2980" oninput="calcDisc()">
+          <input type="number" id="qSale" placeholder="2980" oninput="calcAll()">
         </div>
       </div>
+
+      <!-- セール割引表示 -->
       <div id="discInfo" style="display:none" class="disc-info">
         <span class="disc-badge" id="discPct">-0%</span>
         <span class="price-now" id="discSale"></span>
         <span class="price-orig" id="discOrig"></span>
         <span class="price-save" id="discSave"></span>
       </div>
+
+      <!-- ★ 定期便・ポイント セクション -->
+      <hr class="section-divider">
+      <div class="subscription-block">
+        <div class="subscription-block-title">🔄 定期便・ポイント設定 <span style="font-size:10px;font-weight:400;color:var(--mu)">（任意・入力すると実質価格を計算）</span></div>
+        <div class="row3">
+          <div class="field" style="margin-bottom:0">
+            <span class="label">定期便割引 (%)<span class="label-opt">任意</span></span>
+            <input type="number" id="qSubDisc" placeholder="例: 5" min="0" max="15" step="0.5" oninput="calcAll()">
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <span class="label">ポイント還元率 (%)<span class="label-opt">任意</span></span>
+            <input type="number" id="qPoint" placeholder="例: 1" min="0" max="20" step="0.5" oninput="calcAll()">
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <span class="label">クーポン割引 (円)<span class="label-opt">任意</span></span>
+            <input type="number" id="qCoupon" placeholder="例: 200" min="0" oninput="calcAll()">
+          </div>
+        </div>
+      </div>
+
+      <!-- ★ 実質価格まとめパネル -->
+      <div id="effectivePanel" style="display:none" class="effective-panel">
+        <div class="effective-panel-title">✅ 実質価格まとめ</div>
+        <div class="effective-rows">
+          <div class="effective-row">
+            <span class="eff-label">セール価格</span>
+            <span class="eff-val" id="effSale">-</span>
+          </div>
+          <div class="effective-row" id="effSubRow" style="display:none">
+            <span class="eff-label">定期便価格 <span class="tag-sub" id="effSubTag"></span></span>
+            <span class="eff-val" id="effSubPrice">-</span>
+          </div>
+          <div class="effective-row" id="effCouponRow" style="display:none">
+            <span class="eff-label">クーポン適用後</span>
+            <span class="eff-val" id="effCouponPrice">-</span>
+          </div>
+          <div class="effective-row" id="effPointRow" style="display:none">
+            <span class="eff-label">獲得ポイント <span class="tag-pt" id="effPointTag"></span></span>
+            <span class="eff-val" id="effPointAmt" style="color:var(--am)">-</span>
+          </div>
+          <div class="effective-row highlight" id="effFinalRow" style="display:none">
+            <span class="eff-label">💰 実質価格（ポイント込み）</span>
+            <span class="eff-val" id="effFinal">-</span>
+          </div>
+        </div>
+        <div class="eff-sub" id="effSummaryText" style="margin-top:10px;font-size:12px;color:var(--gr)"></div>
+      </div>
+
+      <!-- 商品名・補足 -->
       <div class="field">
         <span class="label">商品名（空欄でAIが自動推測）</span>
         <input id="qName" placeholder="例: Anker PowerCore 10000 モバイルバッテリー">
@@ -128,6 +208,7 @@ textarea { resize: vertical; }
         <span class="label">ひとこと補足（任意）</span>
         <input id="qNote" placeholder="例: タイムセール！在庫わずか、旅行に最適">
       </div>
+
       <button class="btn bp btn-full" id="genBtn" onclick="generateAll()">
         🤖 X投稿文・ブログ記事を一括生成
       </button>
@@ -233,6 +314,7 @@ function switchTab(name, el) {
 }
 
 function fmtNum(n) { return Number(n).toLocaleString('ja-JP'); }
+function fmtPt(n) { return Math.floor(n).toLocaleString('ja-JP') + 'pt'; }
 
 function extractAsin(input) {
   input = input.trim();
@@ -254,17 +336,115 @@ function previewThumb() {
   img.onerror = () => { img.style.display = 'none'; };
 }
 
-function calcDisc() {
-  const o = parseFloat(document.getElementById('qOrig').value) || 0;
-  const s = parseFloat(document.getElementById('qSale').value) || 0;
-  const el = document.getElementById('discInfo');
-  if (!o || !s || s >= o) { el.style.display = 'none'; return; }
-  const d = Math.round((1 - s/o) * 100);
-  document.getElementById('discPct').textContent = `-${d}%`;
-  document.getElementById('discSale').textContent = `¥${fmtNum(s)}`;
-  document.getElementById('discOrig').textContent = `¥${fmtNum(o)}`;
-  document.getElementById('discSave').textContent = `¥${fmtNum(o - s)}お得！`;
-  el.style.display = 'flex';
+// ★ メイン計算関数（セール割引 + 定期便 + ポイント + クーポン をまとめて計算）
+function calcAll() {
+  const orig  = parseFloat(document.getElementById('qOrig').value)    || 0;
+  const sale  = parseFloat(document.getElementById('qSale').value)    || 0;
+  const subD  = parseFloat(document.getElementById('qSubDisc').value) || 0;
+  const ptPct = parseFloat(document.getElementById('qPoint').value)   || 0;
+  const coupon= parseFloat(document.getElementById('qCoupon').value)  || 0;
+
+  // --- 通常セール割引表示 ---
+  const discEl = document.getElementById('discInfo');
+  if (sale > 0 && orig > 0 && sale < orig) {
+    const d = Math.round((1 - sale/orig) * 100);
+    document.getElementById('discPct').textContent  = `-${d}%`;
+    document.getElementById('discSale').textContent = `¥${fmtNum(sale)}`;
+    document.getElementById('discOrig').textContent = `¥${fmtNum(orig)}`;
+    document.getElementById('discSave').textContent = `¥${fmtNum(orig - sale)}お得！`;
+    discEl.style.display = 'flex';
+  } else if (sale > 0) {
+    document.getElementById('discSale').textContent = `¥${fmtNum(sale)}`;
+    document.getElementById('discPct').textContent  = '';
+    document.getElementById('discOrig').textContent = '';
+    document.getElementById('discSave').textContent = '';
+    discEl.style.display = 'flex';
+  } else {
+    discEl.style.display = 'none';
+  }
+
+  // --- 実質価格パネル ---
+  const panel = document.getElementById('effectivePanel');
+  if (!sale) { panel.style.display = 'none'; return; }
+
+  // 何か追加入力があれば表示
+  if (subD <= 0 && ptPct <= 0 && coupon <= 0) {
+    panel.style.display = 'none';
+    return;
+  }
+  panel.style.display = 'block';
+
+  document.getElementById('effSale').textContent = `¥${fmtNum(sale)}`;
+
+  // 定期便価格
+  let basePrice = sale;
+  if (subD > 0) {
+    const subPrice = Math.round(sale * (1 - subD / 100));
+    document.getElementById('effSubRow').style.display   = 'flex';
+    document.getElementById('effSubTag').textContent     = `-${subD}%`;
+    document.getElementById('effSubPrice').textContent   = `¥${fmtNum(subPrice)}`;
+    basePrice = subPrice;
+  } else {
+    document.getElementById('effSubRow').style.display = 'none';
+  }
+
+  // クーポン適用後
+  let afterCoupon = basePrice;
+  if (coupon > 0) {
+    afterCoupon = Math.max(0, basePrice - coupon);
+    document.getElementById('effCouponRow').style.display  = 'flex';
+    document.getElementById('effCouponPrice').textContent  = `¥${fmtNum(afterCoupon)}`;
+  } else {
+    document.getElementById('effCouponRow').style.display = 'none';
+  }
+
+  // ポイント
+  let pointAmt = 0;
+  if (ptPct > 0) {
+    pointAmt = Math.floor(afterCoupon * ptPct / 100);
+    document.getElementById('effPointRow').style.display = 'flex';
+    document.getElementById('effPointTag').textContent   = `${ptPct}%`;
+    document.getElementById('effPointAmt').textContent   = `+${fmtPt(pointAmt)}`;
+  } else {
+    document.getElementById('effPointRow').style.display = 'none';
+  }
+
+  // 実質価格（ポイントを現金換算して差し引き）
+  const effective = afterCoupon - pointAmt;
+  if (subD > 0 || coupon > 0 || ptPct > 0) {
+    document.getElementById('effFinalRow').style.display = 'flex';
+    document.getElementById('effFinal').textContent      = `¥${fmtNum(effective)}`;
+  } else {
+    document.getElementById('effFinalRow').style.display = 'none';
+  }
+
+  // サマリーテキスト
+  let parts = [];
+  if (orig > 0) parts.push(`定価¥${fmtNum(orig)}から`);
+  if (subD > 0)   parts.push(`定期便${subD}%OFF`);
+  if (coupon > 0) parts.push(`クーポン¥${fmtNum(coupon)}引き`);
+  if (ptPct > 0)  parts.push(`ポイント${ptPct}%還元`);
+  parts.push(`実質¥${fmtNum(effective)}！`);
+  document.getElementById('effSummaryText').textContent = parts.join(' → ');
+}
+
+// 後方互換のため残す
+function calcDisc() { calcAll(); }
+
+// ★ 商品情報オブジェクト構築（定期便・ポイント情報を含める）
+function buildProduct() {
+  const orig   = parseFloat(document.getElementById('qOrig').value)    || 0;
+  const sale   = parseFloat(document.getElementById('qSale').value)    || 0;
+  const subD   = parseFloat(document.getElementById('qSubDisc').value) || 0;
+  const ptPct  = parseFloat(document.getElementById('qPoint').value)   || 0;
+  const coupon = parseFloat(document.getElementById('qCoupon').value)  || 0;
+
+  const subPrice    = subD   > 0 ? Math.round(sale * (1 - subD / 100)) : null;
+  const afterCoupon = coupon > 0 ? Math.max(0, (subPrice ?? sale) - coupon) : (subPrice ?? sale);
+  const pointAmt    = ptPct  > 0 ? Math.floor(afterCoupon * ptPct / 100) : 0;
+  const effective   = (subD > 0 || coupon > 0 || ptPct > 0) ? afterCoupon - pointAmt : null;
+
+  return { subD, ptPct, coupon, subPrice, pointAmt, effective };
 }
 
 async function generateAll() {
@@ -279,27 +459,27 @@ async function generateAll() {
   const asin = extractAsin(urlInput);
   if (!asin) { toast('有効なAmazon URLまたはASINを入力してください', 1); return; }
 
-  const affLink = `https://www.amazon.co.jp/dp/${asin}?tag=popo1215-22`;
+  const affLink  = `https://www.amazon.co.jp/dp/${asin}?tag=popo1215-22`;
   const imageUrl = getAmazonImageUrl(asin);
-  const disc = orig && sale ? Math.round((1 - sale/orig) * 100) : 0;
-  const save = orig && sale ? orig - sale : 0;
+  const disc     = orig && sale ? Math.round((1 - sale/orig) * 100) : 0;
+  const save     = orig && sale ? orig - sale : 0;
+  const extra    = buildProduct();
 
   const btn = document.getElementById('genBtn');
   btn.disabled = true;
   btn.innerHTML = '<span class="sp"></span>AIが生成中...';
 
-  currentProduct = { asin, name, orig, sale, disc, save, affLink, imageUrl, note };
+  currentProduct = { asin, name, orig, sale, disc, save, affLink, imageUrl, note, ...extra };
 
   try {
     const [tw, bl] = await Promise.all([
       genTweetText(currentProduct),
       genBlogText(currentProduct)
     ]);
-
     document.getElementById('tweetOutput').textContent = tw;
-    document.getElementById('blogOutput').textContent = bl;
+    document.getElementById('blogOutput').textContent  = bl;
     document.getElementById('tweetCard').style.display = 'block';
-    document.getElementById('blogCard').style.display = 'block';
+    document.getElementById('blogCard').style.display  = 'block';
     updateTweetCount();
     document.getElementById('blogCount').textContent = bl.length + '文字';
     toast('生成完了！🎉');
@@ -312,7 +492,28 @@ async function generateAll() {
   }
 }
 
+// ★ 定期便・ポイント情報を含むプロンプト用テキストを生成
+function buildExtraInfo(p) {
+  let lines = [];
+  if (p.subD > 0 && p.subPrice != null) {
+    lines.push(`定期便割引: ${p.subD}% → 定期便価格: ¥${fmtNum(p.subPrice)}`);
+  }
+  if (p.coupon > 0) {
+    lines.push(`クーポン割引: ¥${fmtNum(p.coupon)}引き`);
+  }
+  if (p.ptPct > 0 && p.pointAmt > 0) {
+    lines.push(`ポイント還元: ${p.ptPct}% → 約${fmtPt(p.pointAmt)}獲得`);
+  }
+  if (p.effective != null) {
+    lines.push(`実質価格（ポイント込み）: ¥${fmtNum(p.effective)}`);
+  }
+  return lines.length > 0 ? lines.join('\n') : 'なし';
+}
+
 async function genTweetText(p) {
+  const hasExtra = p.subD > 0 || p.ptPct > 0 || p.coupon > 0;
+  const effectiveLine = p.effective != null ? `\n💡実質¥${fmtNum(p.effective)}（ポイント込み）` : '';
+
   const prompt = `あなたはAmazonアフィリエイトの投稿プロです。
 以下の商品情報でX（Twitter）投稿文を日本語で作成してください。
 
@@ -322,27 +523,43 @@ ASIN: ${p.asin}
 定価: ${p.orig ? '¥'+fmtNum(p.orig) : '不明'}
 割引率: ${p.disc}%OFF
 節約額: ${p.save > 0 ? '¥'+fmtNum(p.save) : '不明'}
+${buildExtraInfo(p) !== 'なし' ? '--- 追加特典 ---\n' + buildExtraInfo(p) : ''}
 リンク: ${p.affLink}
 補足: ${p.note || 'なし'}
 
 【厳守ルール】
-- 必ず以下の形式で出力すること（改行位置を厳守）：
+- 必ず以下の形式で出力すること：
 
 【${p.disc}%OFF🔥】商品名を短く（20文字以内）
-¥${fmtNum(p.orig)}→¥${fmtNum(p.sale)}（¥${fmtNum(p.save)}お得！）
-⏰在庫わずか！特徴を一言で。
+¥${fmtNum(p.orig)}→¥${fmtNum(p.sale)}（¥${fmtNum(p.save)}お得！）${effectiveLine}
+⏰特徴を一言で。
 
 ${p.affLink}
 #PR #AD #AM #セール #激安
 
-- 上記フォーマットの改行を必ず守ること
+- ${hasExtra ? '実質価格や定期便情報がある場合は必ず投稿文に含めること' : '定期便・ポイント情報は今回不要'}
 - 本文は合計140文字以内に収めること
-- マークダウン不使用、そのまま投稿できる形式`;
+- マークダウン不使用`;
   return await callClaude(prompt);
 }
 
 async function genBlogText(p) {
   const date = new Date().toLocaleDateString('ja-JP');
+  const extraInfo = buildExtraInfo(p);
+  const hasExtra  = extraInfo !== 'なし';
+
+  // 定期便・ポイント用のHTMLブロック（記事内に差し込む）
+  const subBlock = hasExtra ? `
+## 🎁 定期便・ポイント活用でさらにお得！
+
+<div style="background:#f3faf7;border:2px solid #00897b;border-radius:10px;padding:16px 20px;margin:12px 0">
+${p.subD > 0 && p.subPrice != null ? `<div style="margin-bottom:6px">🔄 <strong>定期便適用（${p.subD}%OFF）</strong>: <span style="font-size:18px;font-weight:bold;color:#00897b">¥${fmtNum(p.subPrice)}</span></div>` : ''}
+${p.coupon > 0 ? `<div style="margin-bottom:6px">✂️ <strong>クーポン割引</strong>: ¥${fmtNum(p.coupon)}引き</div>` : ''}
+${p.ptPct > 0 && p.pointAmt > 0 ? `<div style="margin-bottom:6px">🪙 <strong>ポイント還元（${p.ptPct}%）</strong>: 約${fmtPt(p.pointAmt)}獲得</div>` : ''}
+${p.effective != null ? `<div style="margin-top:10px;padding-top:10px;border-top:1px solid #b2dfdb"><span style="font-size:13px;color:#555">💰 </span><strong style="font-size:20px;color:#e53935">実質 ¥${fmtNum(p.effective)}</strong><span style="font-size:12px;color:#888">（ポイント現金換算後）</span></div>` : ''}
+</div>
+` : '';
+
   const prompt = `あなたはAmazonアフィリエイトのプロブロガーです。
 以下の商品情報ではてなブログ用Markdown記事を作成してください。
 
@@ -352,6 +569,8 @@ ASIN: ${p.asin}
 定価: ${p.orig ? '¥'+fmtNum(p.orig) : '不明'}
 割引率: ${p.disc}%OFF
 節約額: ${p.save > 0 ? '¥'+fmtNum(p.save) : '不明'}
+追加特典情報:
+${extraInfo}
 商品画像URL: ${p.imageUrl}
 購入リンク: ${p.affLink}
 補足: ${p.note || 'なし'}
@@ -374,6 +593,8 @@ ASIN: ${p.asin}
 <div style="margin-top:6px"><span style="font-size:13px;color:#888">参考価格: </span><span style="font-size:13px;color:#888;text-decoration:line-through">¥${fmtNum(p.orig)}</span></div>
 <div style="margin-top:6px;font-size:13px;color:#00897b;font-weight:bold">✅ ¥${fmtNum(p.save)}お得！</div>
 </div>
+
+${hasExtra ? subBlock : ''}
 
 ## こんな人におすすめ
 
@@ -407,11 +628,11 @@ ASIN: ${p.asin}
 [🛒 Amazonで今すぐ購入する（¥${fmtNum(p.sale)}）](${p.affLink})
 
 【ルール】
-- Markdownのみ・HTMLタグ不使用
+- Markdownのみ・HTMLタグ不使用（価格ブロック内のHTMLは除く）
 - 各セクションは必ず空行で区切ること
 - 購買意欲を高める文体
-- 上記の構成テンプレートに沿って肉付けして出力すること
-- タイトルの（商品名を簡潔に）部分は実際の商品名に必ず置き換えること`;
+- タイトルの（商品名を簡潔に）部分は実際の商品名に必ず置き換えること
+- ${hasExtra ? '定期便・ポイント・実質価格の情報は必ず記事に盛り込むこと' : '定期便・ポイント情報の追加セクションは今回不要'}`;
   return await callClaude(prompt);
 }
 
@@ -428,9 +649,9 @@ async function callClaude(prompt) {
 
 function updateTweetCount() {
   const text = document.getElementById('tweetOutput').textContent;
-  const el = document.getElementById('tweetCount');
+  const el   = document.getElementById('tweetCount');
   el.textContent = text.length + '文字';
-  el.className = 'char-count' + (text.length > 140 ? ' over' : '');
+  el.className   = 'char-count' + (text.length > 140 ? ' over' : '');
 }
 
 function copyAndOpenX() {
@@ -450,8 +671,8 @@ function downloadBlog() {
   const text = document.getElementById('blogOutput').textContent;
   if (!text) { toast('まず生成してください', 1); return; }
   const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
   a.download = 'blog-' + Date.now() + '.md';
   a.click();
   toast('保存しました！');
@@ -474,7 +695,7 @@ async function regenBlog(btn) {
   btn.disabled = true; btn.textContent = '生成中...';
   try {
     const bl = await genBlogText(currentProduct);
-    document.getElementById('blogOutput').textContent = bl;
+    document.getElementById('blogOutput').textContent  = bl;
     document.getElementById('blogCount').textContent = bl.length + '文字';
     toast('再生成しました！');
   } catch(e) { toast('失敗: ' + e.message, 1); }
@@ -494,7 +715,7 @@ function guessCategory(name) {
 async function postToHatena() {
   if (!currentProduct) { toast('先に商品情報を入力してください', 1); return; }
   const title = document.getElementById('blogOutput').textContent.split('\n')[0].replace(/^#\s*/, '').trim();
-  const body = document.getElementById('blogOutput').textContent;
+  const body  = document.getElementById('blogOutput').textContent;
   if (!body) { toast('先にブログ記事を生成してください', 1); return; }
 
   const btn = document.getElementById('hatenaBtn');
@@ -574,11 +795,11 @@ function renderResults() {
 }
 
 function quickPost(asin, encodedName, price, orig) {
-  document.getElementById('qUrl').value = asin;
-  document.getElementById('qName').value = decodeURIComponent(encodedName);
-  document.getElementById('qSale').value = price;
-  document.getElementById('qOrig').value = orig;
-  calcDisc();
+  document.getElementById('qUrl').value   = asin;
+  document.getElementById('qName').value  = decodeURIComponent(encodedName);
+  document.getElementById('qSale').value  = price;
+  document.getElementById('qOrig').value  = orig;
+  calcAll();
   previewThumb();
   switchTab('quick', document.getElementById('btn-quick'));
   window.scrollTo({ top: 0, behavior: 'smooth' });
