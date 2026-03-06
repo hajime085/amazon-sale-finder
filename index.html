@@ -261,8 +261,25 @@ textarea{resize:vertical}
       </div>
 
       <div class="r2">
-        <div class="f"><span class="lbl">商品名<span class="lbl-hint">空欄でAIが自動推測</span></span><input id="qName" placeholder="例: ビオスリーHi錠 180錠" oninput="saveLastInput()"></div>
+        <div class="f"><span class="lbl">商品名<span class="lbl-hint">空欄でAIが自動推測</span></span><input id="qName" placeholder="例: ビオスリーHi錠 180錠" oninput="onNameInput()"></div>
         <div class="f"><span class="lbl">ひとこと補足<span class="lbl-hint">任意</span></span><input id="qNote" placeholder="例: タイムセール！在庫わずか"></div>
+      </div>
+      <!-- カテゴリー自動判定 + 手動変更 -->
+      <div class="f">
+        <span class="lbl">カテゴリー<span class="lbl-hint">商品名から自動判定・手動変更可</span></span>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <select id="qCat" style="flex:1;min-width:160px">
+            <option value="食品・日用品">食品・日用品</option>
+            <option value="家電・ガジェット">家電・ガジェット</option>
+            <option value="ファッション">ファッション</option>
+            <option value="生活用品">生活用品</option>
+            <option value="美容・健康">美容・健康</option>
+            <option value="スポーツ・アウトドア">スポーツ・アウトドア</option>
+            <option value="セール情報">セール情報</option>
+            <option value="その他">その他</option>
+          </select>
+          <span id="catAutoLabel" style="font-size:11px;color:var(--gr)"></span>
+        </div>
       </div>
     </div>
 
@@ -542,14 +559,47 @@ function affLink(asin) {
   return 'https://www.amazon.co.jp/dp/' + asin + '?tag=' + id;
 }
 
-function guessCategory(name) {
-  if (!name) return 'その他';
-  if (/イヤホン|スピーカー|カメラ|パソコン|タブレット|スマホ|充電|バッテリー|マウス|キーボード|モニター|SSD|HDD|ゲーム|テレビ|冷蔵庫|洗濯|掃除|炊飯|電子レンジ|エアコン/i.test(name)) return '家電・ガジェット';
-  if (/シャンプー|コスメ|美容|スキンケア|化粧|サプリ|ビタミン|プロテイン|薬|整腸|乳酸菌/i.test(name)) return '美容・健康';
-  if (/食品|お菓子|飲料|コーヒー|お茶|米|麺|調味料|日用品|洗剤|ティッシュ|ペットフード/i.test(name)) return '食品・日用品';
-  if (/アウトドア|登山|キャンプ|釣り|自転車|スポーツ|ヨガ|トレーニング|ランニング/i.test(name)) return 'スポーツ・アウトドア';
-  if (/服|シャツ|パンツ|ジャケット|バッグ|財布|靴|スニーカー|帽子/i.test(name)) return 'ファッション';
+// カテゴリー自動判定（拡充版）
+function guessCategory(name, disc) {
+  if (!name) return disc >= 30 ? 'セール情報' : 'その他';
+  if (/イヤホン|スピーカー|カメラ|パソコン|PC|タブレット|スマホ|スマートフォン|充電|バッテリー|マウス|キーボード|モニター|SSD|HDD|ゲーム|テレビ|冷蔵庫|洗濯機|掃除機|炊飯|電子レンジ|エアコン|ルーター|Wi-Fi|ドライヤー|電動/i.test(name)) return '家電・ガジェット';
+  if (/シャンプー|コスメ|美容|スキンケア|化粧|サプリ|ビタミン|プロテイン|薬|整腸|乳酸菌|美白|コラーゲン|ヒアルロン|アンチエイジング|健康/i.test(name)) return '美容・健康';
+  if (/食品|お菓子|スイーツ|飲料|コーヒー|お茶|緑茶|紅茶|米|麺|パスタ|調味料|醤油|味噌|肉|魚|野菜|果物|ジュース|ミネラルウォーター|アルコール|ビール|ワイン/i.test(name)) return '食品・日用品';
+  if (/日用品|洗剤|ティッシュ|ペットフード|トイレ|収納|掃除|キッチン用品|フライパン|鍋|タオル|洗濯|柔軟剤|ゴミ袋|ラップ/i.test(name)) return '生活用品';
+  if (/アウトドア|登山|キャンプ|テント|釣り|自転車|スポーツ|ヨガ|トレーニング|ランニング|ジム|ダンベル|プロテイン|ウェア/i.test(name)) return 'スポーツ・アウトドア';
+  if (/服|シャツ|パンツ|ジャケット|コート|バッグ|財布|靴|スニーカー|帽子|アクセサリー|ネックレス|時計|ベルト/i.test(name)) return 'ファッション';
+  if (disc >= 30) return 'セール情報';
   return 'その他';
+}
+
+// 商品名入力時にカテゴリーを自動更新
+function onNameInput() {
+  saveLastInput();
+  var name = document.getElementById('qName').value.trim();
+  var orig = parseFloat(document.getElementById('qOrig').value) || 0;
+  var sale = parseFloat(document.getElementById('qSale').value) || 0;
+  var disc = (orig > 0 && sale < orig) ? Math.round((1 - sale/orig)*100) : 0;
+  var cat  = guessCategory(name, disc);
+  var sel  = document.getElementById('qCat');
+  var lbl  = document.getElementById('catAutoLabel');
+  if (sel) {
+    sel.value = cat;
+    if (lbl) lbl.textContent = '🤖 自動判定: ' + cat;
+  }
+}
+
+// 現在選択中のカテゴリーを取得（手動変更があればそちら優先）
+function getSelectedCat() {
+  var sel = document.getElementById('qCat');
+  return sel ? sel.value : guessCategory(document.getElementById('qName').value.trim(), 0);
+}
+
+// Amazonリンクをtarget="_blank" rel="noopener" 付きで生成
+function affLinkMd(asin, label) {
+  var url = affLink(asin);
+  // Markdownリンクはそのまま（はてなブログ側でtargetは付与される）
+  // HTMLブロック内だけtargetを付与
+  return { url: url, html: '<a href="' + url + '" target="_blank" rel="noopener">' + (label||'Amazonで購入する') + '</a>' };
 }
 
 async function callAI(prompt) {
@@ -693,7 +743,8 @@ function calcQ() {
   if (disc > 0) parts.push('('+disc+'%OFF \u00a5'+fmt(save)+'お得)');
   if (pt > 0) parts.push('\u2192 '+fmt(pt)+'pt還元 \u2192 実質\u00a5'+fmt(sale-pt));
   document.getElementById('ppSum').textContent = parts.join(' ');
-  saveLastInput();
+  // 割引率変化でカテゴリーを再判定（セール情報判定のため）
+  onNameInput();
 }
 
 /* ===== 最後の入力保存 ===== */
@@ -781,7 +832,7 @@ async function genAll() {
   var btn = document.getElementById('genBtn');
   btn.disabled = true; btn.innerHTML = '<span class="sp"></span>AIが生成中...';
 
-  cur = { asin:asin, name:name, orig:orig, sale:sale, disc:disc, save:save, pt:pt, eff:eff, link:link, iUrl:iUrl, note:note, selTitle:selTitle, cat:guessCategory(name), date:new Date().toLocaleDateString('ja-JP') };
+  cur = { asin:asin, name:name, orig:orig, sale:sale, disc:disc, save:save, pt:pt, eff:eff, link:link, iUrl:iUrl, note:note, selTitle:selTitle, cat:getSelectedCat(), date:new Date().toLocaleDateString('ja-JP') };
 
   try {
     var results = await Promise.all([makeTw(cur), makeBl(cur)]);
@@ -839,7 +890,7 @@ function makeBl(p) {
     '【記事タイトル】\n' + title + '\n\n' +
     '【必須構成】\n' +
     '# '+title+'\n\n' +
-    '[![商品画像]('+p.iUrl+')]('+p.link+')\n\n' +
+    '<a href="'+p.link+'" target="_blank" rel="noopener"><img src="'+p.iUrl+'" alt="商品画像" style="max-width:300px;display:block;margin:12px auto"></a>\n\n' +
     '> ※本記事にはアフィリエイトリンクが含まれます。 #AD\n\n' +
     '（リード文：読者が得する理由を120文字で）\n\n' +
     '## 💰 価格情報\n\n' +
@@ -853,7 +904,7 @@ function makeBl(p) {
     '## スペック・特徴\n\n（箇条書き）\n\n' +
     '## 😊 ここが嬉しいポイント\n\n（購入して良かったと感じるセリングポイントを5点。読者が「買いたい」と思えるよう前向きな表現で書くこと。ネガティブな情報は含めない）\n\n' +
     '## まとめ\n\n（まとめ2〜3文。購入を後押しする文章）\n\n' +
-    '[🛒 Amazonで今すぐ購入する（\u00a5'+fmt(p.sale)+'）]('+p.link+')\n\n' +
+    '<a href="'+p.link+'" target="_blank" rel="noopener">🛒 Amazonで今すぐ購入する（\u00a5'+fmt(p.sale)+'）</a>\n\n' +
     '【ルール】タイトルをそのまま使うこと。Markdownのみ。HTMLタグはdivのみ使用可。'
   );
 }
@@ -944,10 +995,11 @@ function autoSaveArticle(p, body) {
     asin:    p.asin,
     name:    p.name || p.asin,
     title:   title,
-    cat:     p.cat,
+    cat:     p.cat || getSelectedCat(),
     sale:    p.sale,
     orig:    p.orig,
     disc:    p.disc,
+    pt:      p.pt,
     link:    p.link,
     iUrl:    p.iUrl,
     body:    body,
@@ -995,6 +1047,7 @@ function renderStockPage() {
       '</div>' +
       '<div class="stock-actions">' +
         '<button class="btn bs btn-sm" onclick="viewArticle('+idx+')">📄 開く</button>' +
+        '<button class="btn bs btn-sm" onclick="reEditArticle('+idx+')">✏️ 再編集</button>' +
         '<button class="btn bs btn-sm" onclick="copyArticle('+idx+')">📋 コピー</button>' +
         '<button class="btn bpu btn-sm" onclick="addToRank('+idx+')">🏆 ランキングに追加</button>' +
         '<button class="btn bre btn-sm" onclick="deleteArticle('+idx+')">🗑️</button>' +
@@ -1062,6 +1115,46 @@ function deleteArticle(idx) {
   toast('削除しました');
 }
 function closeModal() { document.getElementById('viewModal').classList.remove('show'); }
+
+// ストックから再編集：フォームに値を復元して記事作成タブへ移動
+function reEditArticle(idx) {
+  var item = articleStock[idx];
+  if (!item) return;
+
+  // フォームに値を復元
+  document.getElementById('qUrl').value   = item.asin || '';
+  document.getElementById('qName').value  = item.name || '';
+  document.getElementById('qSale').value  = item.sale || '';
+  document.getElementById('qOrig').value  = item.orig || '';
+  document.getElementById('qPoint').value = item.pt   || '';
+  document.getElementById('qNote').value  = '';
+
+  // カテゴリー復元
+  var catSel = document.getElementById('qCat');
+  if (catSel && item.cat) catSel.value = item.cat;
+
+  // ASIN表示・画像を更新
+  onUrlInput();
+
+  // 生成済み記事を出力欄に復元
+  document.getElementById('blOut').textContent = item.body || '';
+  document.getElementById('blCount').textContent = (item.body || '').length + '文字';
+  document.getElementById('blCard').style.display = 'block';
+
+  // curを復元
+  cur = {
+    asin: item.asin, name: item.name, orig: item.orig||0, sale: item.sale||0,
+    disc: item.disc||0, save: (item.orig||0)-(item.sale||0), pt: item.pt||0,
+    eff: item.pt ? (item.sale||0)-(item.pt||0) : null,
+    link: item.link, iUrl: item.iUrl, note: '', selTitle: item.title,
+    cat: item.cat, date: item.savedAt
+  };
+
+  // 記事作成タブへ移動
+  swTab('post', document.getElementById('btn-post'));
+  window.scrollTo({top:0, behavior:'smooth'});
+  toast('✏️ 再編集モードで読み込みました');
+}
 function copyModal() {
   navigator.clipboard.writeText(document.getElementById('modalOut').textContent)
     .then(function(){ toast('コピーしました！'); });
@@ -1081,76 +1174,134 @@ async function genMatome() {
   var style = document.getElementById('mtStyle').value;
   var cat   = document.getElementById('mtCat').value;
   var max   = parseInt(document.getElementById('mtMax').value);
-  var date  = new Date().toLocaleDateString('ja-JP');
   var tgts  = stockItems.slice();
   if (cat) tgts = tgts.filter(function(i){ return guessCategory(i.name)===cat; });
   tgts = tgts.slice(0, max);
   if (!tgts.length) { toast('該当する商品がありません', 1); return; }
 
-  var btn   = document.getElementById('mtBtn');
+  var btn = document.getElementById('mtBtn');
   btn.disabled = true; btn.innerHTML = '<span class="sp"></span>生成中...';
-  var label = style==='daily' ? '今日('+date+')のお得まとめ' : (cat||'セール')+'カテゴリまとめ';
 
-  var itemsTxt = tgts.map(function(item,i){
-    var disc = (item.orig>0&&item.sale<item.orig) ? Math.round((1-item.sale/item.orig)*100) : 0;
-    return (i+1)+'. '+(item.name||'ASIN:'+item.asin)+
-      '\n   価格:'+fmt(item.sale)+'円'+(disc>0?' (-'+disc+'%)':'')+(item.eff?' 実質'+fmt(item.eff)+'円':'')+
-      '\n   リンク:'+item.link+
-      '\n   画像:https://images-na.ssl-images-amazon.com/images/P/'+item.asin+'.jpg';
-  }).join('\n\n');
+  /* タイトル：日付なし・短く */
+  var label = style === 'daily'
+    ? 'Amazon\u304a\u5f97\u307e\u3068\u3081'
+    : (cat || '\u30bb\u30fc\u30eb') + '\u304a\u3059\u3059\u3081\u307e\u3068\u3081';
+  var fullTitle = label + '\u3010' + tgts.length + '\u9078\u3011';
 
-  var sections = tgts.map(function(item,i){
-    var disc = (item.orig>0&&item.sale<item.orig) ? Math.round((1-item.sale/item.orig)*100) : 0;
-    var pt   = fmt(item.sale)+'円'+(disc>0?' (-'+disc+'%)':'')+(item.eff?' → 実質'+fmt(item.eff)+'円':'');
-    var img  = 'https://images-na.ssl-images-amazon.com/images/P/'+item.asin+'.jpg';
-    return '## '+(i+1)+'. （商品名を簡潔に）\n\n[![画像]('+img+')]('+item.link+')\n\n- 価格: '+pt+'\n- おすすめポイントを1〜2行で\n\n[Amazonで購入する]('+item.link+')';
-  }).join('\n\n---\n\n');
+  /* 価格表記：「¥1,501（定価¥1,949・43%OFF / 35pt還元で実質¥1,466）」 */
+  function buildPriceText(item) {
+    var disc = (item.orig > 0 && item.sale < item.orig)
+      ? Math.round((1 - item.sale / item.orig) * 100) : 0;
+    var txt = '\u00a5' + fmt(item.sale);
+    if (item.orig > 0 && item.sale < item.orig) {
+      txt += '\uff08\u5b9a\u4fa1\u00a5' + fmt(item.orig) + '\u30fb' + disc + '%OFF\uff09';
+    }
+    if (item.pt > 0) {
+      txt += ' / ' + fmt(item.pt) + 'pt\u9084\u5143\u3067\u5b9f\u8cea\u00a5' + fmt(item.sale - item.pt);
+    }
+    return txt;
+  }
 
-  var prompt =
-    'はてなブログAmazonアフィリエイト「'+label+'」まとめ記事をMarkdownで作成。\n\n【商品リスト】\n'+itemsTxt+'\n\n【構成】\n'+
-    '# '+label+'【全'+tgts.length+'選】Amazon激安セール情報\n\n> ※本記事にはアフィリエイトリンクが含まれます。 #AD\n\n（リード文100文字）\n\n'+
-    '## 今回のまとめ商品一覧\n\n| # | 商品名 | 価格 | 割引 |\n|---|--------|------|------|\n（各商品を表で一覧）\n\n---\n\n'+sections+'\n\n---\n\n## まとめ\n\n（50文字）\n\n'+
-    '【ルール】（商品名を簡潔に）は実際の商品名に置き換えること。表の商品名は20文字以内に省略。Markdownのみ。';
+  /* 画像スタイル：200×200固定 */
+  var IMG_STYLE = 'width:200px;height:200px;object-fit:contain;background:#fff;border-radius:8px;padding:4px;display:block;margin:10px auto';
+
+  /* 商品情報テキスト（AIに渡す） */
+  var itemLines = [];
+  for (var i = 0; i < tgts.length; i++) {
+    var item = tgts[i];
+    var disc = (item.orig > 0 && item.sale < item.orig)
+      ? Math.round((1 - item.sale / item.orig) * 100) : 0;
+    var imgSrc = 'https://images-na.ssl-images-amazon.com/images/P/' + item.asin + '.jpg';
+    itemLines.push(
+      '--- \u5546\u54c1' + (i+1) + ' ---\n' +
+      '\u5546\u54c1\u540d: ' + (item.name || item.asin) + '\n' +
+      'ASIN: ' + item.asin + '\n' +
+      '\u4fa1\u683c\u8868\u8a18: ' + buildPriceText(item) + '\n' +
+      '\u5272\u5f15: ' + (disc > 0 ? disc + '%OFF' : '\u306a\u3057') + '\n' +
+      '\u8cfc\u5165\u30ea\u30f3\u30af\uff08\u5909\u66f4\u7981\u6b62\uff09: ' + item.link + '\n' +
+      '\u753b\u50cfURL\uff08\u5909\u66f4\u7981\u6b62\uff09: ' + imgSrc
+    );
+  }
+  var itemsTxt = itemLines.join('\n\n');
+
+  /* セクションひな形（リンク・画像をJS側で確定） */
+  var sectionParts = [];
+  for (var j = 0; j < tgts.length; j++) {
+    var it = tgts[j];
+    var imgS = 'https://images-na.ssl-images-amazon.com/images/P/' + it.asin + '.jpg';
+    sectionParts.push(
+      '## ' + (j+1) + '. \u3010\u5546\u54c1' + (j+1) + '\u306e\u6b63\u5f0f\u540d\u79f0\u3092\u3053\u3053\u306b\u5165\u308c\u308b\u3011\n\n' +
+      '<a href="' + it.link + '" target="_blank" rel="noopener">\n' +
+      '<img src="' + imgS + '" alt="\u5546\u54c1\u753b\u50cf" style="' + IMG_STYLE + '">\n' +
+      '</a>\n\n' +
+      '\ud83d\udcb0 **' + buildPriceText(it) + '**\n\n' +
+      '\u3010\u3053\u306e\u5546\u54c1\u306e\u9b45\u529b\u30fb\u304a\u3059\u3059\u3081\u7406\u7531\u30923\u6587\u4ee5\u4e0a\u3067\u66f8\u304f\u3002\u5546\u54c1\u306e\u7279\u5fb4\u3001\u3069\u3093\u306a\u4eba\u306b\u5411\u3044\u3066\u3044\u308b\u304b\u3001\u751f\u6d3b\u3078\u306e\u52b9\u679c\u306a\u3069\u3092\u5177\u4f53\u7684\u306b\u3011\n\n' +
+      '<a href="' + it.link + '" target="_blank" rel="noopener">\ud83d\uded2 Amazon\u3067\u8cfc\u5165\u3059\u308b</a>'
+    );
+  }
+  var sections = sectionParts.join('\n\n---\n\n');
+
+  /* 一覧表 */
+  var tableRows = [];
+  for (var k = 0; k < tgts.length; k++) {
+    var ti = tgts[k];
+    var td = (ti.orig > 0 && ti.sale < ti.orig)
+      ? Math.round((1 - ti.sale / ti.orig) * 100) + '%OFF' : '-';
+    tableRows.push('| ' + (k+1) + ' | ' + (ti.name||ti.asin).substring(0,20) + ' | \u00a5' + fmt(ti.sale) + ' | ' + td + ' |');
+  }
+
+  /* プロンプト */
+  var prompt = [
+    '\u3042\u306a\u305f\u306f\u306f\u3066\u306a\u30d6\u30ed\u30b0\u306eAmazon\u30a2\u30d5\u30a3\u30ea\u30a8\u30a4\u30bf\u30fc\u3067\u3059\u3002\u4ee5\u4e0b\u306e\u6307\u793a\u306b\u5f93\u3063\u3066\u8a18\u4e8b\u3092\u5b8c\u6210\u3055\u305b\u3066\u304f\u3060\u3055\u3044\u3002',
+    '',
+    '\u3010\u53b3\u5b88\u30eb\u30fc\u30eb\u3011',
+    '1. \u5404\u5546\u54c1\u30bb\u30af\u30b7\u30e7\u30f3\u306eHTML\u30ea\u30f3\u30af\u3068\u753b\u50cfURL\u306f\u7d76\u5bfe\u306b\u5909\u66f4\u30fb\u6539\u5909\u3057\u306a\u3044\u3053\u3068',
+    '2. \u5546\u54c1\u540d\u306f\u5fc5\u305a\u5b9f\u969b\u306e\u5546\u54c1\u540d\u3092\u4f7f\u3046\u3053\u3068',
+    '3. \u4fa1\u683c\u8868\u8a18\u306f\u63d0\u4f9b\u3055\u308c\u305f\u3082\u306e\u3092\u305d\u306e\u307e\u307e\u4f7f\u3046\u3053\u3068',
+    '4. \u5404\u5546\u54c1\u306e\u8aac\u660e\u6587\u306f\u5fc5\u305a3\u6587\u4ee5\u4e0a\u66f8\u304f\u3053\u3068',
+    '5. Markdown\u3068\u30b7\u30f3\u30d7\u30eb\u306adiv/a\u30bf\u30b0\u306e\u307f\u4f7f\u7528',
+    '',
+    '\u3010\u5546\u54c1\u60c5\u5831\u30ea\u30b9\u30c8\u3011',
+    itemsTxt,
+    '',
+    '\u3010\u4ee5\u4e0b\u306e\u3072\u306a\u5f62\u3092\u5b8c\u6210\u3055\u305b\u3066\u51fa\u529b\u3059\u308b\u3053\u3068\u3011',
+    '',
+    '# ' + fullTitle,
+    '',
+    '> \u203b\u672c\u8a18\u4e8b\u306b\u306f\u30a2\u30d5\u30a3\u30ea\u30a8\u30a4\u30c8\u30ea\u30f3\u30af\u304c\u542b\u307e\u308c\u307e\u3059\u3002 #AD',
+    '',
+    '\uff08\u30ea\u30fc\u30c9\u6587\uff1a2\uff5e3\u6587\u3067\uff09',
+    '',
+    '## \u5546\u54c1\u4e00\u89a7',
+    '',
+    '| # | \u5546\u54c1\u540d | \u4fa1\u683c | \u5272\u5f15 |',
+    '|---|--------|------|------|',
+    tableRows.join('\n'),
+    '',
+    '---',
+    '',
+    sections,
+    '',
+    '---',
+    '',
+    '## \u307e\u3068\u3081',
+    '',
+    '\uff08\u7de0\u3081\u30b3\u30e1\u30f3\u30c8\u3092 2\uff5e3\u6587\u3067\uff09',
+    '',
+    '\u3010\u51fa\u529b\u306fMarkdown\u5f62\u5f0f\u306e\u307f\u3002\u3010\u3011\u5185\u306e\u6307\u793a\u6587\u3092\u5b9f\u969b\u306e\u30c6\u30ad\u30b9\u30c8\u306b\u7f6e\u304d\u63db\u3048\u308b\u3053\u3068\u3011'
+  ].join('\n');
 
   try {
     var result = await callAI(prompt);
     document.getElementById('mtOut').textContent      = result;
     document.getElementById('mtResult').style.display = 'block';
-    document.getElementById('mtCount').textContent    = result.length + '文字';
+    document.getElementById('mtCount').textContent    = result.length + '\u6587\u5b57';
     document.getElementById('mtResult').scrollIntoView({behavior:'smooth'});
-    toast('まとめ記事を生成しました！');
-  } catch(e) { toast('生成失敗: '+e.message, 1); }
-  finally { btn.disabled=false; btn.innerHTML='📋 まとめ記事を生成'; }
+    toast('\u307e\u3068\u3081\u8a18\u4e8b\u3092\u751f\u6210\u3057\u307e\u3057\u305f\uff01');
+  } catch(e) { toast('\u751f\u6210\u5931\u6557: '+e.message, 1); }
+  finally { btn.disabled=false; btn.innerHTML='\ud83d\udccb \u307e\u3068\u3081\u8a18\u4e8b\u3092\u751f\u6210'; }
 }
-function copyMt() { navigator.clipboard.writeText(document.getElementById('mtOut').textContent).then(function(){ toast('コピーしました！'); }); }
-function dlMt()   { dl(document.getElementById('mtOut').textContent, 'matome-'+Date.now()+'.md'); }
-async function postMt() {
-  var body  = document.getElementById('mtOut').textContent;
-  if (!body){ toast('先に生成してください', 1); return; }
-  var title = body.split('\n')[0].replace(/^#+\s*/,'').trim();
-  var btn   = document.getElementById('mtBtn');
-  btn.disabled=true; btn.innerHTML='<span class="sp"></span>投稿中...';
-  try {
-    var r = await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'hatena-post',title:title,body:body,hatenaId:HID,blogId:BID,category:'まとめ',imageUrl:stockItems[0]?imgUrl(stockItems[0].asin):''})});
-    var d = await r.json(); if(d.error) throw new Error(d.error);
-    toast('投稿しました！');
-  } catch(e) { toast('投稿失敗: '+e.message, 1); }
-  finally { btn.disabled=false; btn.innerHTML='📋 まとめ記事を生成'; }
-}
-
-/* ===== ランキング記事 ===== */
-function addToRank(stockIdx) {
-  var item = articleStock[stockIdx];
-  if (!item) return;
-  if (rankItems.find(function(r){ return r.asin===item.asin; })) {
-    toast('すでにランキングに追加されています', 1); return;
-  }
-  rankItems.push({asin:item.asin, name:item.name||item.title, sale:item.sale, orig:item.orig, disc:item.disc, link:item.link, iUrl:item.iUrl, body:item.body});
-  renderRankSlots();
-  toast('🏆 ランキングに追加しました！ランキング記事タブへ');
-}
-
+/* ===== ランキング操作 ===== */
 function renderRankSlots() {
   var el  = document.getElementById('rankSlots');
   var cnt = document.getElementById('rankCount');
@@ -1165,7 +1316,7 @@ function renderRankSlots() {
     var div = document.createElement('div');
     div.className = 'rank-slot';
     div.innerHTML =
-      '<div class="rank-num '+(colors[idx]||'')+'"><span>'+(idx+1)+'位</span></div>' +
+      '<div class="rank-num '+(colors[idx]||'')+'">'+(idx+1)+'位</div>' +
       '<img class="rank-thumb" src="'+item.iUrl+'" onerror="this.style.display=\'none\'">' +
       '<div class="rank-info">' +
         '<div class="rank-name">'+item.name+'</div>' +
@@ -1180,14 +1331,30 @@ function renderRankSlots() {
   });
 }
 
+function addToRank(stockIdx) {
+  var item = articleStock[stockIdx];
+  if (!item) return;
+  if (rankItems.find(function(r){ return r.asin===item.asin; })) {
+    toast('すでにランキングに追加されています', 1); return;
+  }
+  rankItems.push({asin:item.asin, name:item.name||item.title, sale:item.sale, orig:item.orig, disc:item.disc, link:item.link, iUrl:item.iUrl, body:item.body});
+  renderRankSlots();
+  toast('🏆 ランキングに追加しました！');
+}
+
 function moveRank(idx, dir) {
   var to = idx + dir;
   if (to < 0 || to >= rankItems.length) return;
   var tmp = rankItems[idx]; rankItems[idx] = rankItems[to]; rankItems[to] = tmp;
   renderRankSlots();
 }
+
 function removeRank(idx) { rankItems.splice(idx, 1); renderRankSlots(); }
-function clearRank() { if (!confirm('ランキング構成をクリアしますか？')) return; rankItems=[]; renderRankSlots(); }
+
+function clearRank() {
+  if (!confirm('ランキング構成をクリアしますか？')) return;
+  rankItems = []; renderRankSlots();
+}
 
 async function genRanking() {
   if (!rankItems.length) { toast('ランキングに商品を追加してください', 1); return; }
@@ -1216,12 +1383,12 @@ async function genRanking() {
     rankItems.map(function(item,i){
       var medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'🏅';
       return '## '+(i+1)+'位 '+medal+' （商品名を簡潔に）\n\n' +
-        '[![画像]('+item.iUrl+')]('+item.link+')\n\n' +
+        '<a href="'+item.link+'" target="_blank" rel="noopener"><img src="'+item.iUrl+'" alt="商品画像" style="max-width:240px;display:block;margin:8px auto"></a>\n\n' +
         '| 項目 | 内容 |\n|------|------|\n' +
         '| 💰 価格 | \u00a5'+fmt(item.sale)+(item.disc>0?' (-'+item.disc+'%)':'')+' |\n' +
         '| ✅ おすすめ度 | ★★★★☆ |\n\n' +
         '（この商品のおすすめポイントを2〜3文で）\n\n' +
-        '[🛒 Amazonで購入する]('+item.link+')';
+        '<a href="'+item.link+'" target="_blank" rel="noopener">🛒 Amazonで購入する</a>';
     }).join('\n\n---\n\n') +
     '\n\n---\n\n## まとめ\n\n（ランキングの総括・購入を後押しする文章を3文で）\n\n' +
     '【ルール】各（商品名を簡潔に）は実際の商品名に置き換えること。Markdownのみ。';
