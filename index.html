@@ -3,385 +3,682 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🛒 Amazon セール品発見ツール</title>
+<title>🛒 Amazon アフィリエイト記事作成ツール</title>
 <style>
+/* ===== CSS変数・リセット ===== */
 :root {
-  --am: #FF9900; --amd: #e47911;
-  --bg: #0f0f13; --s1: #1a1a22; --s2: #22222e;
-  --bd: #2e2e3e; --tx: #e8e8f0; --mu: #8888aa;
-  --gr: #00d68f; --re: #ff4d6d; --bl: #4d9fff;
-  --tw: #1DA1F2;
+  --am:#FF9900; --amd:#e47911; --bg:#0f0f13; --s1:#1a1a22; --s2:#22222e;
+  --bd:#2e2e3e; --tx:#e8e8f0; --mu:#8888aa; --gr:#00d68f; --re:#ff4d6d; --tw:#1DA1F2;
+  --pu:#9b59b6;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system,'Helvetica Neue',sans-serif; background: var(--bg); color: var(--tx); font-size: 14px; line-height: 1.6; min-height: 100vh; }
-header { background: var(--s1); border-bottom: 1px solid var(--bd); padding: 12px 20px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100; flex-wrap: wrap; }
-.logo { font-size: 18px; font-weight: 800; background: linear-gradient(90deg,#FF9900,#ffcc44); -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap; }
-.tab-nav { background: var(--s1); border-bottom: 1px solid var(--bd); padding: 0 20px; display: flex; gap: 4px; }
-.tab-nav-btn { padding: 12px 20px; border: none; background: transparent; color: var(--mu); cursor: pointer; font-size: 14px; font-weight: 700; font-family: inherit; border-bottom: 3px solid transparent; transition: all .15s; }
-.tab-nav-btn.active { color: var(--am); border-bottom-color: var(--am); }
-.tab-content { display: none; }
-.tab-content.active { display: block; }
-.main { max-width: 800px; margin: 0 auto; padding: 24px 20px; }
-input, select, textarea { background: var(--s2); border: 1px solid var(--bd); border-radius: 8px; color: var(--tx); padding: 10px 14px; font-size: 13px; font-family: inherit; transition: border-color .15s; width: 100%; }
-input:focus, select:focus, textarea:focus { outline: none; border-color: var(--am); }
-textarea { resize: vertical; }
-.label { font-size: 11px; color: var(--mu); font-weight: 700; text-transform: uppercase; letter-spacing: .4px; display: block; margin-bottom: 5px; }
-.label-hint { font-size: 10px; color: var(--mu); font-weight: 400; text-transform: none; letter-spacing: 0; margin-left: 4px; }
-.field { margin-bottom: 14px; }
-.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-.btn { padding: 10px 18px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 700; font-family: inherit; transition: all .15s; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
-.bp { background: var(--am); color: #000; }
-.bp:hover:not(:disabled) { background: var(--amd); transform: translateY(-1px); }
-.bs { background: var(--s2); color: var(--tx); border: 1px solid var(--bd); }
-.bs:hover { border-color: var(--am); color: var(--am); }
-.btn-tw { background: var(--tw); color: #fff; }
-.btn-tw:hover:not(:disabled) { background: #0d8fd9; transform: translateY(-1px); }
-.btn:disabled { opacity: .45; cursor: not-allowed; transform: none !important; }
-.btn-full { width: 100%; justify-content: center; padding: 12px; font-size: 14px; }
-.card { background: var(--s1); border: 1px solid var(--bd); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
-.card-title { font-size: 13px; font-weight: 700; color: var(--am); margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,'Helvetica Neue',sans-serif;background:var(--bg);color:var(--tx);font-size:14px;line-height:1.6;min-height:100vh}
 
-/* 価格サマリーパネル */
-.price-panel { border-radius: 12px; padding: 14px 18px; margin-bottom: 14px; display: none; background: rgba(255,77,109,.08); border: 1px solid rgba(255,77,109,.3); }
-.price-panel.show { display: block; }
-.pp-top { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
-.pp-badge { display: inline-block; font-size: 20px; font-weight: 800; padding: 4px 14px; border-radius: 20px; background: var(--re); color: #fff; }
-.pp-sale { font-size: 22px; font-weight: 800; }
-.pp-orig { font-size: 13px; text-decoration: line-through; color: var(--mu); }
-.pp-save { font-size: 12px; color: var(--gr); font-weight: 700; }
-.pp-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-size: 13px; border-top: 1px solid rgba(255,255,255,.05); margin-top: 4px; }
-.pp-label { color: var(--mu); }
-.pp-val { font-weight: 700; }
-.pp-highlight { background: rgba(0,214,143,.12); border-radius: 8px; padding: 8px 12px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; }
-.pp-highlight .pp-label { color: var(--tx); font-weight: 700; font-size: 13px; }
-.pp-highlight .pp-val { color: var(--gr); font-size: 20px; }
-.pp-summary { font-size: 11px; color: var(--gr); margin-top: 8px; }
+/* ===== ヘッダー ===== */
+header{background:var(--s1);border-bottom:1px solid var(--bd);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:12px;flex-wrap:wrap}
+.logo{font-size:17px;font-weight:800;background:linear-gradient(90deg,#FF9900,#ffcc44);-webkit-background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap}
+.header-settings{display:flex;align-items:center;gap:8px}
+.assoc-label{font-size:11px;color:var(--mu);white-space:nowrap}
+.assoc-input{background:var(--s2);border:1px solid var(--bd);border-radius:6px;color:var(--tx);padding:6px 10px;font-size:12px;font-family:inherit;width:160px}
+.assoc-input:focus{outline:none;border-color:var(--am)}
 
-/* ヒントボックス */
-.hint-box { background: rgba(255,153,0,.07); border: 1px solid rgba(255,153,0,.2); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-size: 12px; color: var(--mu); line-height: 1.7; }
-.hint-box strong { color: var(--am); }
+/* ===== タブナビ ===== */
+.tab-nav{background:var(--s1);border-bottom:1px solid var(--bd);padding:0 20px;display:flex;gap:4px}
+.tab-btn{padding:12px 18px;border:none;background:transparent;color:var(--mu);cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;border-bottom:3px solid transparent;transition:all .15s;white-space:nowrap}
+.tab-btn.active{color:var(--am);border-bottom-color:var(--am)}
+.tab{display:none}.tab.active{display:block}
 
-.output-area { background: var(--s2); border: 1px solid var(--bd); border-radius: 10px; padding: 16px; font-size: 13px; line-height: 1.8; white-space: pre-wrap; font-family: inherit; min-height: 80px; margin-top: 10px; }
-.output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-.output-label { font-size: 11px; font-weight: 700; color: var(--mu); }
-.char-count { font-size: 11px; color: var(--mu); }
-.char-count.over { color: var(--re); font-weight: 700; }
-.search-wrap { background: var(--s1); border-bottom: 1px solid var(--bd); padding: 14px 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
-.search-wrap .f { display: flex; flex-direction: column; gap: 4px; }
-.search-wrap .f label { font-size: 10px; color: var(--mu); font-weight: 700; text-transform: uppercase; }
-.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-.product-card { background: var(--s1); border: 1px solid var(--bd); border-radius: 14px; overflow: hidden; transition: transform .2s, border-color .2s; display: flex; flex-direction: column; }
-.product-card:hover { transform: translateY(-2px); border-color: var(--am); }
-.card-img { width: 100%; height: 180px; object-fit: contain; background: #fff; padding: 10px; }
-.card-img-ph { width: 100%; height: 180px; background: var(--s2); display: flex; align-items: center; justify-content: center; font-size: 40px; }
-.card-body { padding: 12px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
-.card-title2 { font-size: 12px; font-weight: 600; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.card-badges { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
-.badge-disc { background: var(--re); color: #fff; font-size: 12px; font-weight: 800; padding: 2px 8px; border-radius: 20px; }
-.badge-price { font-size: 18px; font-weight: 800; }
-.badge-orig { font-size: 11px; text-decoration: line-through; color: var(--mu); }
-.card-actions { display: flex; flex-direction: column; gap: 5px; margin-top: auto; padding-top: 6px; }
-.card-actions .btn { width: 100%; justify-content: center; font-size: 11px; padding: 7px; }
-.sp { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.3); border-top-color: currentColor; border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; flex-shrink: 0; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 18px; border-radius: 10px; font-weight: 700; font-size: 13px; opacity: 0; transform: translateY(8px); transition: all .25s; z-index: 9999; pointer-events: none; }
-.toast.show { opacity: 1; transform: translateY(0); }
-.empty-state { text-align: center; padding: 60px 20px; color: var(--mu); }
-.empty-icon { font-size: 56px; margin-bottom: 16px; }
-.empty-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; color: var(--tx); }
-.loading-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-.skeleton { background: var(--s1); border: 1px solid var(--bd); border-radius: 14px; overflow: hidden; }
-.skeleton-img { width: 100%; height: 180px; background: var(--s2); animation: pulse 1.5s infinite; }
-.skeleton-body { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-.skeleton-line { height: 12px; background: var(--s2); border-radius: 6px; animation: pulse 1.5s infinite; }
-.skeleton-line.short { width: 60%; }
-@keyframes pulse { 0%,100%{opacity:.6} 50%{opacity:1} }
-.thumb-preview { width: 100%; max-width: 200px; height: 200px; object-fit: contain; background: #fff; border-radius: 10px; padding: 8px; display: none; margin: 0 auto 12px; border: 2px solid var(--am); }
-@media (max-width: 600px) { .row2 { grid-template-columns: 1fr; } .row3 { grid-template-columns: 1fr; } .product-grid { grid-template-columns: 1fr; } }
+/* ===== レイアウト ===== */
+.main{max-width:860px;margin:0 auto;padding:24px 20px}
+.main-wide{max-width:1060px;margin:0 auto;padding:24px 20px}
+
+/* ===== フォーム要素 ===== */
+input,select,textarea{background:var(--s2);border:1px solid var(--bd);border-radius:8px;color:var(--tx);padding:10px 14px;font-size:13px;font-family:inherit;transition:border-color .15s;width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--am)}
+textarea{resize:vertical}
+.lbl{font-size:11px;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px}
+.lbl-hint{font-size:10px;color:var(--mu);font-weight:400;text-transform:none;letter-spacing:0;margin-left:4px}
+.f{margin-bottom:14px}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* ===== ボタン ===== */
+.btn{padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;transition:all .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.bp{background:var(--am);color:#000}.bp:hover:not(:disabled){background:var(--amd);transform:translateY(-1px)}
+.bs{background:var(--s2);color:var(--tx);border:1px solid var(--bd)}.bs:hover:not(:disabled){border-color:var(--am);color:var(--am)}
+.btw{background:var(--tw);color:#fff}.btw:hover:not(:disabled){background:#0d8fd9;transform:translateY(-1px)}
+.bgr{background:var(--gr);color:#000}.bgr:hover:not(:disabled){opacity:.85;transform:translateY(-1px)}
+.bpu{background:var(--pu);color:#fff}.bpu:hover:not(:disabled){opacity:.85;transform:translateY(-1px)}
+.bre{background:rgba(255,77,109,.15);color:var(--re);border:1px solid rgba(255,77,109,.3)}.bre:hover{background:rgba(255,77,109,.25)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
+.btn-full{width:100%;justify-content:center;padding:12px;font-size:14px}
+.btn-sm{padding:6px 12px;font-size:12px}
+
+/* ===== カード ===== */
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:20px;margin-bottom:16px}
+.card-title{font-size:13px;font-weight:700;color:var(--am);margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.hint{background:rgba(255,153,0,.07);border:1px solid rgba(255,153,0,.2);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--mu);line-height:1.7}
+.hint strong{color:var(--am)}
+.divider{border:none;border-top:1px solid var(--bd);margin:8px 0 20px}
+
+/* ===== 価格パネル ===== */
+.pp{border-radius:12px;padding:14px 18px;margin-bottom:14px;display:none;background:rgba(255,77,109,.08);border:1px solid rgba(255,77,109,.3)}
+.pp.show{display:block}
+.pp-top{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.pp-badge{font-size:18px;font-weight:800;padding:3px 12px;border-radius:20px;background:var(--re);color:#fff}
+.pp-sale{font-size:22px;font-weight:800}
+.pp-orig{font-size:13px;text-decoration:line-through;color:var(--mu)}
+.pp-save{font-size:12px;color:var(--gr);font-weight:700}
+.pp-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:13px;border-top:1px solid rgba(255,255,255,.05);margin-top:4px}
+.pp-lbl{color:var(--mu)}.pp-val{font-weight:700}
+.pp-eff{background:rgba(0,214,143,.12);border-radius:8px;padding:8px 12px;margin-top:8px;display:flex;justify-content:space-between;align-items:center}
+.pp-eff .pp-lbl{color:var(--tx);font-weight:700}.pp-eff .pp-val{color:var(--gr);font-size:20px}
+.pp-sum{font-size:11px;color:var(--gr);margin-top:8px}
+
+/* ===== タイトル候補 ===== */
+.title-grid{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.title-chip{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;transition:all .15s;font-size:13px}
+.title-chip:hover{border-color:var(--am);color:var(--am)}
+.title-chip.selected{border-color:var(--am);background:rgba(255,153,0,.1);color:var(--am);font-weight:700}
+.title-chip-text{flex:1}
+.title-use-btn{font-size:11px;color:var(--mu);white-space:nowrap}
+.title-chip:hover .title-use-btn{color:var(--am)}
+
+/* ===== 出力エリア ===== */
+.out{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:16px;font-size:12px;line-height:1.8;white-space:pre-wrap;font-family:Menlo,Monaco,monospace;min-height:80px;margin-top:8px}
+.out-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.out-lbl{font-size:11px;font-weight:700;color:var(--mu)}
+.cc{font-size:11px;color:var(--mu)}.cc.over{color:var(--re);font-weight:700}
+
+/* ===== サムネイル ===== */
+.thumb{width:100%;max-width:160px;height:160px;object-fit:contain;background:#fff;border-radius:10px;padding:8px;display:none;margin:0 auto 12px;border:2px solid var(--am)}
+
+/* ===== 記事ストック ===== */
+.stock-empty{text-align:center;padding:40px 20px;color:var(--mu);font-size:13px}
+.stock-list{display:flex;flex-direction:column;gap:10px}
+.stock-card{background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px;transition:border-color .15s}
+.stock-card:hover{border-color:var(--bd)}
+.stock-thumb{width:52px;height:52px;object-fit:contain;background:#fff;border-radius:8px;padding:4px;flex-shrink:0}
+.stock-info{flex:1;min-width:0}
+.stock-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+.stock-meta{font-size:11px;color:var(--mu);display:flex;gap:10px;flex-wrap:wrap}
+.stock-badge{display:inline-block;padding:1px 8px;border-radius:10px;font-size:10px;font-weight:700}
+.badge-disc{background:rgba(255,77,109,.2);color:var(--re)}
+.badge-asin{background:rgba(136,136,170,.15);color:var(--mu)}
+.stock-actions{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap}
+
+/* ===== ランキング ===== */
+.rank-slot{background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.rank-num{font-size:22px;font-weight:900;color:var(--am);width:32px;flex-shrink:0;text-align:center}
+.rank-num.gold{color:#FFD700}
+.rank-num.silver{color:#C0C0C0}
+.rank-num.bronze{color:#CD7F32}
+.rank-info{flex:1;min-width:0}
+.rank-name{font-size:13px;font-weight:700;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-price{font-size:12px;color:var(--mu)}
+.rank-del{background:none;border:none;color:var(--mu);cursor:pointer;font-size:16px;padding:4px}
+.rank-del:hover{color:var(--re)}
+.rank-thumb{width:44px;height:44px;object-fit:contain;background:#fff;border-radius:6px;padding:3px;flex-shrink:0}
+
+/* ===== モーダル ===== */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;align-items:center;justify-content:center;padding:20px}
+.modal.show{display:flex}
+.modal-box{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:24px;width:100%;max-width:680px;max-height:90vh;overflow-y:auto}
+.modal-title{font-size:15px;font-weight:700;color:var(--am);margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.modal-close{background:none;border:none;color:var(--mu);cursor:pointer;font-size:20px;line-height:1}
+.modal-close:hover{color:var(--tx)}
+.modal-out{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:16px;font-size:12px;line-height:1.8;white-space:pre-wrap;font-family:Menlo,Monaco,monospace;max-height:55vh;overflow-y:auto}
+
+/* ===== セール品検索 ===== */
+.sw{background:var(--s1);border-bottom:1px solid var(--bd);padding:14px 20px;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.sf{display:flex;flex-direction:column;gap:4px}
+.sf label{font-size:10px;color:var(--mu);font-weight:700;text-transform:uppercase}
+.empty-st{text-align:center;padding:60px 20px;color:var(--mu)}
+.empty-ic{font-size:52px;margin-bottom:14px}
+.empty-ti{font-size:15px;font-weight:700;margin-bottom:8px;color:var(--tx)}
+
+/* ===== スピナー・トースト ===== */
+.sp{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:currentColor;border-radius:50%;animation:spin .7s linear infinite;display:inline-block;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:10px;font-weight:700;font-size:13px;opacity:0;transform:translateY(8px);transition:all .25s;z-index:9999;pointer-events:none;max-width:320px}
+.toast.show{opacity:1;transform:translateY(0)}
+
+/* ===== レスポンシブ ===== */
+@media(max-width:600px){.r2,.r3{grid-template-columns:1fr}.stock-actions{flex-direction:column}}
 </style>
 </head>
 <body>
 
+<!-- ===== ヘッダー ===== -->
 <header>
-  <span>🛒</span>
-  <div class="logo">Amazon セール品発見ツール</div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <span>🛒</span>
+    <div class="logo">Amazon アフィリエイト記事作成ツール</div>
+  </div>
+  <div class="header-settings">
+    <span class="assoc-label">アソシエイトID:</span>
+    <input class="assoc-input" id="assocId" placeholder="popo1215-22" oninput="saveAssocId()">
+  </div>
 </header>
 
+<!-- ===== タブナビ ===== -->
 <div class="tab-nav">
-  <button class="tab-nav-btn active" id="btn-quick" onclick="switchTab('quick',this)">⚡ 即時投稿作成</button>
-  <button class="tab-nav-btn" id="btn-search" onclick="switchTab('search',this)">🔍 セール品検索</button>
+  <button class="tab-btn active" id="btn-post"   onclick="swTab('post',this)">⚡ 記事作成</button>
+  <button class="tab-btn"        id="btn-stock"  onclick="swTab('stock',this)">📦 記事ストック</button>
+  <button class="tab-btn"        id="btn-rank"   onclick="swTab('rank',this)">🏆 ランキング記事</button>
+  <button class="tab-btn"        id="btn-search" onclick="swTab('search',this)">🔍 セール品検索</button>
 </div>
 
-<div class="tab-content active" id="tab-quick">
+<!-- ========================================
+     タブ①：記事作成
+     ======================================== -->
+<div class="tab active" id="tab-post">
   <div class="main">
+
+    <!-- 商品情報入力 -->
     <div class="card">
       <div class="card-title">📦 商品情報を入力</div>
-
-      <div class="hint-box">
-        💡 <strong>Amazonの注文確認画面を見ながら入力するだけ！</strong><br>
-        定価（参考価格）・ご請求額・獲得ポイント数の3つを入力してください。<br>
-        定期便・クーポン・セール割引がどう組み合わさっていても正確に計算されます。
+      <div class="hint">
+        💡 <strong>Amazon URLを貼り付けると ASINを自動抽出</strong>します。<br>
+        定価・ご請求額・獲得ポイントを入力すると価格が自動計算されます。
       </div>
 
-      <div class="field">
-        <span class="label">Amazon URL または ASIN ※必須</span>
-        <input id="qUrl" placeholder="https://www.amazon.co.jp/dp/B07XK6Z87X または B07XK6Z87X" oninput="previewThumb()">
+      <!-- URL入力 → ASIN自動抽出 -->
+      <div class="f">
+        <span class="lbl">Amazon URL または ASIN ※必須</span>
+        <input id="qUrl" placeholder="https://www.amazon.co.jp/dp/B07XK6Z87X  または  B07XK6Z87X" oninput="onUrlInput()">
       </div>
-      <img id="thumbPreview" class="thumb-preview" alt="商品画像プレビュー">
 
-      <!-- ★ 3項目のみ -->
-      <div class="row3">
-        <div class="field">
-          <span class="label">定価（円）<span class="label-hint">参考価格</span></span>
-          <input type="number" id="qOrig" placeholder="例: 1949" oninput="calcAll()">
-        </div>
-        <div class="field">
-          <span class="label">ご請求額（円）※必須<span class="label-hint">割引後の合計</span></span>
-          <input type="number" id="qSale" placeholder="例: 1501" oninput="calcAll()">
-        </div>
-        <div class="field">
-          <span class="label">獲得ポイント（pt）<span class="label-hint">任意</span></span>
-          <input type="number" id="qPoint" placeholder="例: 125" oninput="calcAll()">
+      <!-- ASIN表示 + サムネ -->
+      <div id="asinRow" style="display:none;margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <img id="thumbImg" class="thumb" style="display:block;margin:0;width:80px;height:80px" alt="商品画像">
+          <div>
+            <div style="font-size:11px;color:var(--mu);font-weight:700;margin-bottom:4px">ASIN</div>
+            <div id="asinDisplay" style="font-size:16px;font-weight:800;color:var(--am);letter-spacing:1px"></div>
+            <div style="font-size:11px;color:var(--mu);margin-top:4px" id="affLinkDisplay"></div>
+          </div>
         </div>
       </div>
 
-      <!-- 価格サマリーパネル（自動表示） -->
-      <div class="price-panel" id="pricePanel">
+      <div class="r3">
+        <div class="f"><span class="lbl">定価（円）<span class="lbl-hint">参考価格</span></span><input type="number" id="qOrig"  placeholder="例: 1949" oninput="calcQ()"></div>
+        <div class="f"><span class="lbl">ご請求額（円）※必須</span><input type="number" id="qSale"  placeholder="例: 1501" oninput="calcQ()"></div>
+        <div class="f"><span class="lbl">獲得ポイント（pt）<span class="lbl-hint">任意</span></span><input type="number" id="qPoint" placeholder="例: 125"  oninput="calcQ()"></div>
+      </div>
+
+      <!-- 価格パネル -->
+      <div class="pp" id="pp">
         <div class="pp-top">
-          <span class="pp-badge" id="ppBadge"></span>
-          <span class="pp-sale" id="ppSale"></span>
-          <span class="pp-orig" id="ppOrig"></span>
-          <span class="pp-save" id="ppSave"></span>
+          <span class="pp-badge" id="ppBadge" style="display:none"></span>
+          <span class="pp-sale"  id="ppSale"></span>
+          <span class="pp-orig"  id="ppOrig"></span>
+          <span class="pp-save"  id="ppSave"></span>
         </div>
-        <div class="pp-row" id="ppPointRow" style="display:none">
-          <span class="pp-label">🪙 獲得ポイント</span>
-          <span class="pp-val" style="color:var(--am)" id="ppPoint"></span>
+        <div class="pp-row" id="ppPtRow" style="display:none">
+          <span class="pp-lbl">🪙 獲得ポイント</span>
+          <span class="pp-val" style="color:var(--am)" id="ppPt"></span>
         </div>
-        <div class="pp-highlight" id="ppEffRow" style="display:none">
-          <span class="pp-label">💰 実質価格（ポイント込み）</span>
+        <div class="pp-eff" id="ppEffRow" style="display:none">
+          <span class="pp-lbl">💰 実質価格（ポイント込み）</span>
           <span class="pp-val" id="ppEff"></span>
         </div>
-        <div class="pp-summary" id="ppSummary"></div>
+        <div class="pp-sum" id="ppSum"></div>
       </div>
 
-      <div class="field">
-        <span class="label">商品名（空欄でAIが自動推測）</span>
-        <input id="qName" placeholder="例: ビオスリーHi錠 180錠 整腸剤">
+      <div class="r2">
+        <div class="f"><span class="lbl">商品名<span class="lbl-hint">空欄でAIが自動推測</span></span><input id="qName" placeholder="例: ビオスリーHi錠 180錠" oninput="saveLastInput()"></div>
+        <div class="f"><span class="lbl">ひとこと補足<span class="lbl-hint">任意</span></span><input id="qNote" placeholder="例: タイムセール！在庫わずか"></div>
       </div>
-      <div class="field">
-        <span class="label">ひとこと補足（任意）</span>
-        <input id="qNote" placeholder="例: タイムセール！在庫わずか、定期便がお得">
-      </div>
-
-      <button class="btn bp btn-full" id="genBtn" onclick="generateAll()">
-        🤖 X投稿文・ブログ記事を一括生成
-      </button>
     </div>
 
-    <div class="card" id="tweetCard" style="display:none">
+    <!-- タイトル候補生成 -->
+    <div class="card">
+      <div class="card-title">🏷️ 記事タイトル候補</div>
+      <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+        <button class="btn bs" onclick="genTitles()" id="titleBtn">💡 タイトル候補を生成</button>
+        <span style="font-size:11px;color:var(--mu)">クリックして記事タイトルに使うタイトルを選択</span>
+      </div>
+      <div id="titleGrid" class="title-grid" style="display:none"></div>
+    </div>
+
+    <!-- 記事生成 -->
+    <div class="card">
+      <div class="card-title">🤖 記事生成</div>
+      <div class="f" id="selectedTitleRow" style="display:none">
+        <span class="lbl">選択中のタイトル</span>
+        <input id="selectedTitle" style="border-color:var(--am)" readonly>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn bp btn-full" id="genBtn" onclick="genAll()" style="flex:2">🤖 X投稿文・ブログ記事を一括生成</button>
+      </div>
+    </div>
+
+    <!-- X投稿文 -->
+    <div class="card" id="twCard" style="display:none">
       <div class="card-title">🐦 X（Twitter）投稿文</div>
-      <div class="output-header">
-        <span class="output-label">#PR #AD 含む・140文字以内</span>
-        <span class="char-count" id="tweetCount">0文字</span>
-      </div>
-      <div class="output-area" id="tweetOutput" contenteditable="true" oninput="updateTweetCount()"></div>
+      <div class="out-hdr"><span class="out-lbl">#PR #AD 含む</span><span class="cc" id="twCount">0文字</span></div>
+      <div class="out" id="twOut" contenteditable="true" oninput="updTw()"></div>
       <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
-        <button class="btn btn-tw" style="flex:1;justify-content:center;min-width:140px" onclick="copyAndOpenX()">📋 コピーしてXを開く</button>
-        <button class="btn bs" onclick="regenTweet(this)">🔄 再生成</button>
+        <button class="btn btw" style="flex:1;justify-content:center" onclick="copyX()">📋 コピーしてXを開く</button>
+        <button class="btn bs" onclick="regenTw(this)">🔄 再生成</button>
       </div>
     </div>
 
-    <div class="card" id="blogCard" style="display:none">
+    <!-- ブログ記事 -->
+    <div class="card" id="blCard" style="display:none">
       <div class="card-title">📝 はてなブログ用 Markdown記事</div>
-      <div class="output-header">
-        <span class="output-label">コピーしてはてなブログに貼り付け</span>
-        <span class="char-count" id="blogCount">0文字</span>
-      </div>
-      <div class="output-area" id="blogOutput" style="max-height:400px;overflow-y:auto;font-family:Menlo,monospace;font-size:12px"></div>
+      <div class="out-hdr"><span class="out-lbl">コピーしてはてなブログへ</span><span class="cc" id="blCount">0文字</span></div>
+      <div class="out" id="blOut" style="max-height:420px;overflow-y:auto"></div>
       <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
-        <button class="btn bs" style="flex:1;justify-content:center;min-width:120px" onclick="copyBlog()">📋 記事をコピー</button>
-        <button class="btn bs" onclick="downloadBlog()">💾 保存</button>
-        <button class="btn bs" onclick="regenBlog(this)">🔄 再生成</button>
-        <button class="btn bp" style="flex:1;justify-content:center;min-width:140px" id="hatenaBtn" onclick="postToHatena()">📝 はてなブログに投稿</button>
+        <button class="btn bs" style="flex:1;justify-content:center" onclick="copyBl()">📋 記事をコピー</button>
+        <button class="btn bs" onclick="dlBl()">💾 保存</button>
+        <button class="btn bs" onclick="regenBl(this)">🔄 再生成</button>
+        <button class="btn bgr" style="flex:1;justify-content:center" onclick="saveToStock()">📦 ストックに保存</button>
+        <button class="btn bp" style="flex:1;justify-content:center" id="hatBtn" onclick="postHatena()">📝 はてなブログに投稿</button>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- まとめ記事ストック -->
+    <div class="card">
+      <div class="card-title">🗂️ まとめ記事ストック <span id="stCount" style="font-size:11px;color:var(--mu);font-weight:400">（0件）</span></div>
+      <div class="hint">💡 上で記事を生成すると自動でストックされます。<strong>📦 ストックに保存</strong>ボタンで明示保存もできます。</div>
+      <div id="stList" class="stock-list"></div>
+    </div>
+
+    <!-- まとめ記事生成 -->
+    <div class="card">
+      <div class="card-title">📋 まとめ記事を生成</div>
+      <div class="mt-opts r3" style="margin-bottom:14px">
+        <div class="f">
+          <span class="lbl">記事スタイル</span>
+          <select id="mtStyle"><option value="daily">今日のお得まとめ</option><option value="category">カテゴリ別まとめ</option></select>
+        </div>
+        <div class="f">
+          <span class="lbl">カテゴリ<span class="lbl-hint">カテゴリ別の場合</span></span>
+          <select id="mtCat">
+            <option value="">すべて混合</option>
+            <option value="家電・ガジェット">家電・ガジェット</option>
+            <option value="美容・健康">美容・健康</option>
+            <option value="食品・日用品">食品・日用品</option>
+            <option value="スポーツ・アウトドア">スポーツ・アウトドア</option>
+            <option value="ファッション">ファッション</option>
+          </select>
+        </div>
+        <div class="f">
+          <span class="lbl">含める商品数</span>
+          <select id="mtMax"><option value="5">5件</option><option value="7" selected>7件</option><option value="10">10件</option></select>
+        </div>
+      </div>
+      <button class="btn bp btn-full" id="mtBtn" onclick="genMatome()">📋 まとめ記事を生成</button>
+    </div>
+
+    <!-- まとめ記事結果 -->
+    <div class="card" id="mtResult" style="display:none">
+      <div class="card-title">📄 生成されたまとめ記事</div>
+      <div class="out-hdr"><span class="out-lbl">コピーしてはてなブログへ</span><span class="cc" id="mtCount">0文字</span></div>
+      <div class="out" id="mtOut" style="max-height:500px;overflow-y:auto"></div>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <button class="btn bs" style="flex:1;justify-content:center" onclick="copyMt()">📋 コピー</button>
+        <button class="btn bs" onclick="dlMt()">💾 保存</button>
+        <button class="btn bp" style="flex:1;justify-content:center" onclick="postMt()">📝 はてなブログに投稿</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========================================
+     タブ②：記事ストック
+     ======================================== -->
+<div class="tab" id="tab-stock">
+  <div class="main-wide">
+    <div class="card">
+      <div class="card-title">📦 記事ストック一覧 <span id="stockPageCount" style="font-size:11px;color:var(--mu);font-weight:400">（0件）</span></div>
+      <div class="hint">💡 記事作成タブで生成した記事が自動保存されます。ランキング記事に追加したい記事は「🏆 ランキングに追加」ボタンを使ってください。</div>
+      <div id="stockPageList">
+        <div class="stock-empty">まだ記事がありません。記事作成タブで記事を生成してください。</div>
       </div>
     </div>
   </div>
 </div>
 
-<div class="tab-content" id="tab-search">
-  <div class="search-wrap">
-    <div class="f" style="flex:1;min-width:200px">
-      <label>キーワード検索</label>
-      <input id="keywords" placeholder="例: モバイルバッテリー、イヤホン..." style="width:100%" onkeydown="if(event.key==='Enter')searchItems()">
+<!-- ========================================
+     タブ③：ランキング記事
+     ======================================== -->
+<div class="tab" id="tab-rank">
+  <div class="main">
+
+    <!-- ランキング設定 -->
+    <div class="card">
+      <div class="card-title">🏆 ランキング記事を作成</div>
+      <div class="hint">💡 <strong>記事ストックから商品を追加</strong>してランキングを組み、AIがランキング記事を生成します。</div>
+      <div class="r2">
+        <div class="f"><span class="lbl">ランキングタイトル</span><input id="rankTitle" placeholder="例: おすすめ目覚まし時計ランキング"></div>
+        <div class="f"><span class="lbl">カテゴリ / テーマ</span><input id="rankTheme" placeholder="例: 一人暮らし向け、コスパ重視"></div>
+      </div>
+      <button class="btn bs" onclick="swTab('stock', document.getElementById('btn-stock'))">📦 ストックから商品を追加する →</button>
     </div>
-    <div class="f">
-      <label>カテゴリ</label>
-      <select id="category">
-        <option value="All">すべて</option>
-        <option value="Electronics">家電・カメラ</option>
-        <option value="Computers">パソコン・周辺機器</option>
-        <option value="HomeAndKitchen">ホーム・キッチン</option>
-        <option value="Fashion">ファッション</option>
-        <option value="Toys">おもちゃ・ゲーム</option>
-        <option value="Sports">スポーツ・アウトドア</option>
-        <option value="Beauty">美容・健康</option>
-      </select>
+
+    <!-- ランキングスロット -->
+    <div class="card">
+      <div class="card-title">📋 ランキング構成 <span id="rankCount" style="font-size:11px;color:var(--mu);font-weight:400">（0件）</span></div>
+      <div id="rankSlots">
+        <div class="stock-empty">まだ商品がありません。ストックから追加してください。</div>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn bp btn-full" id="rankGenBtn" onclick="genRanking()" style="flex:2">🏆 ランキング記事を生成（AI）</button>
+        <button class="btn bre" onclick="clearRank()">🗑️ クリア</button>
+      </div>
     </div>
-    <div class="f">
-      <label>最低割引率</label>
-      <select id="minDiscount">
-        <option value="0">指定なし</option>
-        <option value="10">10%以上</option>
-        <option value="20">20%以上</option>
-        <option value="30" selected>30%以上</option>
-        <option value="50">50%以上</option>
-        <option value="70">70%以上</option>
-      </select>
+
+    <!-- ランキング記事結果 -->
+    <div class="card" id="rankResult" style="display:none">
+      <div class="card-title">📄 生成されたランキング記事</div>
+      <div class="out-hdr"><span class="out-lbl">コピーしてはてなブログへ</span><span class="cc" id="rankCount2">0文字</span></div>
+      <div class="out" id="rankOut" style="max-height:500px;overflow-y:auto"></div>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <button class="btn bs" style="flex:1;justify-content:center" onclick="copyRank()">📋 コピー</button>
+        <button class="btn bs" onclick="dlRank()">💾 保存</button>
+        <button class="btn bp" style="flex:1;justify-content:center" onclick="postRank()">📝 はてなブログに投稿</button>
+      </div>
     </div>
-    <button class="btn bp" id="searchBtn" onclick="searchItems()">🔍 セール品を探す</button>
+
+  </div>
+</div>
+
+<!-- ========================================
+     タブ④：セール品検索（PA-API）
+     ======================================== -->
+<div class="tab" id="tab-search">
+  <div class="sw">
+    <div class="sf" style="flex:1;min-width:200px"><label>キーワード検索</label><input id="kw" placeholder="例: モバイルバッテリー..." style="width:100%" onkeydown="if(event.key==='Enter')doSearch()"></div>
+    <div class="sf"><label>カテゴリ</label><select id="cat"><option value="All">すべて</option><option value="Electronics">家電・カメラ</option><option value="Computers">パソコン・周辺機器</option><option value="HomeAndKitchen">ホーム・キッチン</option><option value="Beauty">美容・健康</option><option value="Toys">おもちゃ・ゲーム</option><option value="Sports">スポーツ・アウトドア</option></select></div>
+    <div class="sf"><label>最低割引率</label><select id="disc"><option value="0">指定なし</option><option value="10">10%以上</option><option value="20">20%以上</option><option value="30" selected>30%以上</option><option value="50">50%以上</option></select></div>
+    <button class="btn bp" id="srchBtn" onclick="doSearch()">🔍 セール品を探す</button>
   </div>
   <div class="main" style="max-width:1100px">
-    <div id="resultsArea">
-      <div class="empty-state">
-        <div class="empty-icon">🏷️</div>
-        <div class="empty-title">セール品を検索してみましょう</div>
-        <div style="font-size:13px;color:var(--mu)">PA-API有効化後に使えます</div>
-      </div>
+    <div id="srchResult">
+      <div class="empty-st"><div class="empty-ic">🏷️</div><div class="empty-ti">セール品を検索してみましょう</div><div style="font-size:13px;color:var(--mu)">PA-API有効化後に使えます</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 記事閲覧モーダル ===== -->
+<div class="modal" id="viewModal">
+  <div class="modal-box">
+    <div class="modal-title">
+      <span id="modalTitle">記事を表示</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-out" id="modalOut"></div>
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+      <button class="btn bs" style="flex:1;justify-content:center" onclick="copyModal()">📋 コピー</button>
+      <button class="btn bs" onclick="closeModal()">閉じる</button>
     </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
+<!-- ========================================
+     JavaScript
+     ======================================== -->
 <script>
-const WORKER_URL = 'https://amazon-sale-api.bulibuli-mushi.workers.dev';
-const HATENA_ID  = 'enjoy-box';
-const BLOG_ID    = 'popo-1215.hatenablog.com';
+/* ===== 定数・グローバル変数 ===== */
+const WK  = 'https://amazon-sale-api.bulibuli-mushi.workers.dev';
+const HID = 'enjoy-box';
+const BID = 'popo-1215.hatenablog.com';
 
-let currentProduct = null;
-let allItems = [];
+let cur = null;          // 現在生成中の商品情報
+let stockItems = [];     // まとめ用ストック（旧）
+let articleStock = [];   // 記事ストック（localStorage永続）
+let rankItems = [];      // ランキング構成
 
+/* ===== 初期化 ===== */
+window.addEventListener('DOMContentLoaded', function() {
+  // アソシエイトID復元
+  var id = localStorage.getItem('assocId') || 'popo1215-22';
+  document.getElementById('assocId').value = id;
+
+  // 記事ストック復元
+  try { articleStock = JSON.parse(localStorage.getItem('articleStock') || '[]'); } catch(e) { articleStock = []; }
+
+  // まとめ用ストック復元
+  try { stockItems = JSON.parse(localStorage.getItem('amzStock') || '[]'); } catch(e) { stockItems = []; }
+
+  // 最後の入力復元
+  var last = JSON.parse(localStorage.getItem('lastInput') || '{}');
+  if (last.url)   document.getElementById('qUrl').value   = last.url;
+  if (last.name)  document.getElementById('qName').value  = last.name;
+  if (last.orig)  document.getElementById('qOrig').value  = last.orig;
+  if (last.sale)  document.getElementById('qSale').value  = last.sale;
+  if (last.point) document.getElementById('qPoint').value = last.point;
+  if (last.url) { onUrlInput(); }
+
+  renderStockSidebar();
+  renderStockPage();
+  renderRankSlots();
+});
+
+/* ===== ユーティリティ ===== */
 function toast(msg, err) {
-  const t = document.getElementById('toast');
+  var t = document.getElementById('toast');
   t.textContent = msg;
   t.style.background = err ? '#ff4d6d' : '#00d68f';
-  t.style.color = err ? '#fff' : '#000';
+  t.style.color      = err ? '#fff'    : '#000';
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
+  setTimeout(function(){ t.classList.remove('show'); }, 3000);
 }
 
-function switchTab(name, el) {
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-nav-btn').forEach(b => b.classList.remove('active'));
+function swTab(name, el) {
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
   document.getElementById('tab-' + name).classList.add('active');
   el.classList.add('active');
 }
 
-function fmtNum(n) { return Number(n).toLocaleString('ja-JP'); }
+function fmt(n) { return Number(n).toLocaleString('ja-JP'); }
 
-function extractAsin(input) {
-  input = input.trim();
-  if (/^[A-Z0-9]{10}$/i.test(input)) return input.toUpperCase();
-  const m = input.match(/\/dp\/([A-Z0-9]{10})/i) || input.match(/\/gp\/product\/([A-Z0-9]{10})/i);
-  return m ? m[1].toUpperCase() : null;
-}
-
-function getAmazonImageUrl(asin) {
-  return `https://images-na.ssl-images-amazon.com/images/P/${asin}.jpg`;
-}
-
-function previewThumb() {
-  const asin = extractAsin(document.getElementById('qUrl').value);
-  const img  = document.getElementById('thumbPreview');
-  if (!asin) { img.style.display = 'none'; return; }
-  img.src = getAmazonImageUrl(asin);
-  img.style.display = 'block';
-  img.onerror = () => { img.style.display = 'none'; };
-}
-
-// ★ シンプル計算：定価・請求額・ポイント数だけ
-function calcAll() {
-  const orig  = parseFloat(document.getElementById('qOrig').value)  || 0;
-  const sale  = parseFloat(document.getElementById('qSale').value)  || 0;
-  const point = parseFloat(document.getElementById('qPoint').value) || 0;
-
-  const panel = document.getElementById('pricePanel');
-  if (!sale) { panel.classList.remove('show'); return; }
-  panel.classList.add('show');
-
-  const disc = (orig > 0 && sale < orig) ? Math.round((1 - sale / orig) * 100) : 0;
-  const save = (orig > 0 && sale < orig) ? orig - sale : 0;
-
-  const badge = document.getElementById('ppBadge');
-  if (disc > 0) {
-    badge.textContent     = `-${disc}%`;
-    badge.style.display   = 'inline-block';
-  } else {
-    badge.style.display   = 'none';
+// ASIN抽出
+function getAsin(s) {
+  s = (s || '').trim();
+  if (/^[A-Z0-9]{10}$/i.test(s)) return s.toUpperCase();
+  var patterns = [
+    /\/dp\/([A-Z0-9]{10})/i,
+    /\/gp\/product\/([A-Z0-9]{10})/i,
+    /amazon\.co\.jp\/([A-Z0-9]{10})/i,
+    /([A-Z0-9]{10})(?:\?|$|\/)/i
+  ];
+  for (var i = 0; i < patterns.length; i++) {
+    var m = s.match(patterns[i]);
+    if (m) return m[1].toUpperCase();
   }
-  document.getElementById('ppSale').textContent = `¥${fmtNum(sale)}`;
-  document.getElementById('ppOrig').textContent = orig > 0 ? `¥${fmtNum(orig)}` : '';
-  document.getElementById('ppSave').textContent = save > 0 ? `¥${fmtNum(save)}お得！` : '';
-
-  if (point > 0) {
-    document.getElementById('ppPointRow').style.display = 'flex';
-    document.getElementById('ppPoint').textContent      = `+${fmtNum(point)}pt`;
-    const eff = sale - point;
-    document.getElementById('ppEffRow').style.display   = 'flex';
-    document.getElementById('ppEff').textContent        = `¥${fmtNum(eff)}`;
-  } else {
-    document.getElementById('ppPointRow').style.display = 'none';
-    document.getElementById('ppEffRow').style.display   = 'none';
-  }
-
-  // サマリーテキスト
-  let parts = [];
-  if (orig > 0) parts.push(`定価¥${fmtNum(orig)}`);
-  parts.push(`→ 請求額¥${fmtNum(sale)}`);
-  if (disc > 0) parts.push(`（${disc}%OFF・¥${fmtNum(save)}お得）`);
-  if (point > 0) parts.push(`→ ${fmtNum(point)}pt還元 → 実質¥${fmtNum(sale - point)}`);
-  document.getElementById('ppSummary').textContent = parts.join(' ');
+  return null;
 }
 
-async function generateAll() {
-  const urlInput = document.getElementById('qUrl').value.trim();
-  const orig  = parseFloat(document.getElementById('qOrig').value)  || 0;
-  const sale  = parseFloat(document.getElementById('qSale').value)  || 0;
-  const point = parseFloat(document.getElementById('qPoint').value) || 0;
-  const name  = document.getElementById('qName').value.trim();
-  const note  = document.getElementById('qNote').value.trim();
+function imgUrl(asin) {
+  return 'https://images-na.ssl-images-amazon.com/images/P/' + asin + '.jpg';
+}
 
-  if (!urlInput) { toast('URLまたはASINを入力してください', 1); return; }
-  if (!sale)     { toast('ご請求額を入力してください', 1); return; }
-  const asin = extractAsin(urlInput);
-  if (!asin)   { toast('有効なAmazon URLまたはASINを入力してください', 1); return; }
+function affLink(asin) {
+  var id = (document.getElementById('assocId').value.trim() || 'popo1215-22');
+  return 'https://www.amazon.co.jp/dp/' + asin + '?tag=' + id;
+}
 
-  const affLink   = `https://www.amazon.co.jp/dp/${asin}?tag=popo1215-22`;
-  const imageUrl  = getAmazonImageUrl(asin);
-  const disc      = (orig > 0 && sale < orig) ? Math.round((1 - sale / orig) * 100) : 0;
-  const save      = (orig > 0 && sale < orig) ? orig - sale : 0;
-  const effective = point > 0 ? sale - point : null;
+function guessCategory(name) {
+  if (!name) return 'その他';
+  if (/イヤホン|スピーカー|カメラ|パソコン|タブレット|スマホ|充電|バッテリー|マウス|キーボード|モニター|SSD|HDD|ゲーム|テレビ|冷蔵庫|洗濯|掃除|炊飯|電子レンジ|エアコン/i.test(name)) return '家電・ガジェット';
+  if (/シャンプー|コスメ|美容|スキンケア|化粧|サプリ|ビタミン|プロテイン|薬|整腸|乳酸菌/i.test(name)) return '美容・健康';
+  if (/食品|お菓子|飲料|コーヒー|お茶|米|麺|調味料|日用品|洗剤|ティッシュ|ペットフード/i.test(name)) return '食品・日用品';
+  if (/アウトドア|登山|キャンプ|釣り|自転車|スポーツ|ヨガ|トレーニング|ランニング/i.test(name)) return 'スポーツ・アウトドア';
+  if (/服|シャツ|パンツ|ジャケット|バッグ|財布|靴|スニーカー|帽子/i.test(name)) return 'ファッション';
+  return 'その他';
+}
 
-  const btn = document.getElementById('genBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="sp"></span>AIが生成中...';
+async function callAI(prompt) {
+  var r = await fetch(WK, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({action: 'claude', prompt: prompt})
+  });
+  var d = await r.json();
+  if (d.error) throw new Error(d.error);
+  return d.text || '';
+}
 
-  currentProduct = { asin, name, orig, sale, disc, save, point, effective, affLink, imageUrl, note };
+/* ===== アソシエイトID保存 ===== */
+function saveAssocId() {
+  localStorage.setItem('assocId', document.getElementById('assocId').value.trim());
+}
+
+/* ===== URL入力 → ASIN自動抽出 ===== */
+function onUrlInput() {
+  var val  = document.getElementById('qUrl').value;
+  var asin = getAsin(val);
+  var row  = document.getElementById('asinRow');
+
+  if (asin) {
+    row.style.display = 'block';
+    document.getElementById('asinDisplay').textContent  = asin;
+    document.getElementById('affLinkDisplay').textContent = affLink(asin);
+    var img = document.getElementById('thumbImg');
+    img.src = imgUrl(asin);
+    img.onerror = function(){ img.style.display = 'none'; };
+    img.onload  = function(){ img.style.display = 'block'; };
+  } else {
+    row.style.display = 'none';
+  }
+  saveLastInput();
+}
+
+/* ===== 価格計算 ===== */
+function calcQ() {
+  var orig = parseFloat(document.getElementById('qOrig').value)  || 0;
+  var sale = parseFloat(document.getElementById('qSale').value)  || 0;
+  var pt   = parseFloat(document.getElementById('qPoint').value) || 0;
+  var pp   = document.getElementById('pp');
+  if (!sale) { pp.classList.remove('show'); return; }
+  pp.classList.add('show');
+  var disc = (orig > 0 && sale < orig) ? Math.round((1 - sale/orig)*100) : 0;
+  var save = (orig > 0 && sale < orig) ? orig - sale : 0;
+  var badge = document.getElementById('ppBadge');
+  if (disc > 0) { badge.textContent = '-'+disc+'%'; badge.style.display = 'inline-block'; }
+  else { badge.style.display = 'none'; }
+  document.getElementById('ppSale').textContent = '\u00a5' + fmt(sale);
+  document.getElementById('ppOrig').textContent = orig > 0 ? '\u00a5'+fmt(orig) : '';
+  document.getElementById('ppSave').textContent = save > 0 ? '\u00a5'+fmt(save)+' お得！' : '';
+  if (pt > 0) {
+    document.getElementById('ppPtRow').style.display  = 'flex';
+    document.getElementById('ppPt').textContent       = '+'+fmt(pt)+'pt';
+    document.getElementById('ppEffRow').style.display = 'flex';
+    document.getElementById('ppEff').textContent      = '\u00a5'+fmt(sale-pt);
+  } else {
+    document.getElementById('ppPtRow').style.display  = 'none';
+    document.getElementById('ppEffRow').style.display = 'none';
+  }
+  var parts = [];
+  if (orig > 0) parts.push('定価\u00a5'+fmt(orig));
+  parts.push('\u2192 請求額\u00a5'+fmt(sale));
+  if (disc > 0) parts.push('('+disc+'%OFF \u00a5'+fmt(save)+'お得)');
+  if (pt > 0) parts.push('\u2192 '+fmt(pt)+'pt還元 \u2192 実質\u00a5'+fmt(sale-pt));
+  document.getElementById('ppSum').textContent = parts.join(' ');
+  saveLastInput();
+}
+
+/* ===== 最後の入力保存 ===== */
+function saveLastInput() {
+  localStorage.setItem('lastInput', JSON.stringify({
+    url:   document.getElementById('qUrl').value,
+    name:  document.getElementById('qName').value,
+    orig:  document.getElementById('qOrig').value,
+    sale:  document.getElementById('qSale').value,
+    point: document.getElementById('qPoint').value
+  }));
+}
+
+/* ===== タイトル候補生成 ===== */
+function genTitles() {
+  var name = document.getElementById('qName').value.trim();
+  var orig = parseFloat(document.getElementById('qOrig').value) || 0;
+  var sale = parseFloat(document.getElementById('qSale').value) || 0;
+  var disc = (orig > 0 && sale < orig) ? Math.round((1 - sale/orig)*100) : 0;
+  var cat  = guessCategory(name);
+
+  // テンプレートから自動生成（AI不要）
+  var templates = [
+    disc > 0 ? '【'+disc+'%OFF】' + (name || '商品名')                                   : null,
+    '【Amazonセール】' + (name || '商品名') + ' 最安値で買う方法',
+    '【タイムセール】' + (name || '商品名') + ' 今すぐ買うべき理由',
+    '【特価】' + (name || '商品名') + ' 価格比較・おすすめポイント',
+    sale > 0 ? '【\u00a5'+fmt(sale)+'】' + (name || '商品名') + ' レビュー・評判まとめ' : null,
+    cat !== 'その他' ? '【'+cat+'】' + (name || '商品名') + ' 徹底レビュー'               : null,
+    '【2024年最新】' + (name || '商品名') + ' おすすめな理由',
+    '【買って後悔しない】' + (name || '商品名') + ' メリット・デメリット',
+  ].filter(Boolean);
+
+  var grid = document.getElementById('titleGrid');
+  grid.style.display = 'flex';
+  grid.innerHTML = '';
+  templates.forEach(function(t) {
+    var div = document.createElement('div');
+    div.className = 'title-chip';
+    div.innerHTML = '<span class="title-chip-text">'+t+'</span><span class="title-use-btn">クリックして使用 →</span>';
+    div.addEventListener('click', function() {
+      document.querySelectorAll('.title-chip').forEach(function(c){ c.classList.remove('selected'); });
+      div.classList.add('selected');
+      document.getElementById('selectedTitle').value = t;
+      document.getElementById('selectedTitleRow').style.display = 'block';
+    });
+    grid.appendChild(div);
+  });
+}
+
+/* ===== 記事一括生成 ===== */
+async function genAll() {
+  var urlVal = document.getElementById('qUrl').value.trim();
+  var orig   = parseFloat(document.getElementById('qOrig').value)  || 0;
+  var sale   = parseFloat(document.getElementById('qSale').value)  || 0;
+  var pt     = parseFloat(document.getElementById('qPoint').value) || 0;
+  var name   = document.getElementById('qName').value.trim();
+  var note   = document.getElementById('qNote').value.trim();
+  var selTitle = document.getElementById('selectedTitle').value.trim();
+
+  if (!urlVal) { toast('URLまたはASINを入力してください', 1); return; }
+  if (!sale)   { toast('ご請求額を入力してください', 1); return; }
+
+  var asin = getAsin(urlVal);
+  if (!asin) { toast('有効なAmazon URLまたはASINを入力してください', 1); return; }
+
+  var link = affLink(asin);
+  var iUrl = imgUrl(asin);
+  var disc = (orig > 0 && sale < orig) ? Math.round((1 - sale/orig)*100) : 0;
+  var save = (orig > 0 && sale < orig) ? orig - sale : 0;
+  var eff  = pt > 0 ? sale - pt : null;
+
+  var btn = document.getElementById('genBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="sp"></span>AIが生成中...';
+
+  cur = { asin:asin, name:name, orig:orig, sale:sale, disc:disc, save:save, pt:pt, eff:eff, link:link, iUrl:iUrl, note:note, selTitle:selTitle, cat:guessCategory(name), date:new Date().toLocaleDateString('ja-JP') };
 
   try {
-    const [tw, bl] = await Promise.all([
-      genTweetText(currentProduct),
-      genBlogText(currentProduct)
-    ]);
-    document.getElementById('tweetOutput').textContent = tw;
-    document.getElementById('blogOutput').textContent  = bl;
-    document.getElementById('tweetCard').style.display = 'block';
-    document.getElementById('blogCard').style.display  = 'block';
-    updateTweetCount();
-    document.getElementById('blogCount').textContent = bl.length + '文字';
+    var results = await Promise.all([makeTw(cur), makeBl(cur)]);
+    document.getElementById('twOut').textContent = results[0];
+    document.getElementById('blOut').textContent = results[1];
+    document.getElementById('twCard').style.display = 'block';
+    document.getElementById('blCard').style.display = 'block';
+    updTw();
+    document.getElementById('blCount').textContent = results[1].length + '文字';
+
+    // 自動でまとめストックに追加
+    addToMtStock(cur);
+    // 自動で記事ストックに保存
+    autoSaveArticle(cur, results[1]);
+
     toast('生成完了！🎉');
-    document.getElementById('tweetCard').scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('twCard').scrollIntoView({behavior:'smooth'});
   } catch(e) {
     toast('生成失敗: ' + e.message, 1);
   } finally {
@@ -390,298 +687,474 @@ async function generateAll() {
   }
 }
 
-async function genTweetText(p) {
-  const effectiveLine = p.effective != null
-    ? `\n💡実質¥${fmtNum(p.effective)}（${fmtNum(p.point)}pt還元）`
-    : '';
-
-  const prompt = `あなたはAmazonアフィリエイトの投稿プロです。
-以下の商品情報でX（Twitter）投稿文を日本語で作成してください。
-
-ASIN: ${p.asin}
-商品名: ${p.name || '（ASINから推測）'}
-ご請求額（実際の支払い額）: ¥${fmtNum(p.sale)}
-定価: ${p.orig ? '¥'+fmtNum(p.orig) : '不明'}
-割引率: ${p.disc > 0 ? p.disc+'%OFF' : '不明'}
-節約額: ${p.save > 0 ? '¥'+fmtNum(p.save) : '不明'}
-獲得ポイント: ${p.point > 0 ? fmtNum(p.point)+'pt' : 'なし'}
-実質価格: ${p.effective != null ? '¥'+fmtNum(p.effective) : 'なし'}
-リンク: ${p.affLink}
-補足: ${p.note || 'なし'}
-
-【厳守ルール】
-必ず以下の形式で出力すること：
-
-【${p.disc > 0 ? p.disc+'%OFF🔥' : 'セール🔥'}】商品名を短く（20文字以内）
-¥${p.orig ? fmtNum(p.orig)+'→' : ''}¥${fmtNum(p.sale)}（¥${fmtNum(p.save)}お得！）${effectiveLine}
-⏰特徴を一言で。
-
-${p.affLink}
-#PR #AD #AM #セール #激安
-
-- 本文は合計140文字以内に収めること
-- マークダウン不使用・そのまま投稿できる形式`;
-  return await callClaude(prompt);
+/* ===== X投稿文生成 ===== */
+function makeTw(p) {
+  var ef = p.eff != null ? '\n💡実質\u00a5'+fmt(p.eff)+'（'+fmt(p.pt)+'pt還元）' : '';
+  return callAI(
+    'AmazonアフィリエイトのX投稿文を作成。140文字以内。\n' +
+    'ASIN:'+p.asin+'\n商品名:'+(p.name||'（ASINから推測）')+'\n請求額:\u00a5'+fmt(p.sale)+
+    '\n定価:'+(p.orig?'\u00a5'+fmt(p.orig):'不明')+'\n割引:'+(p.disc>0?p.disc+'%OFF':'不明')+
+    '\n節約:\u00a5'+fmt(p.save)+'\nPt:'+(p.pt>0?fmt(p.pt)+'pt':'なし')+
+    '\n実質:'+(p.eff?'\u00a5'+fmt(p.eff):'なし')+'\nリンク:'+p.link+'\n補足:'+(p.note||'なし')+
+    '\n\n形式:\n【'+(p.disc>0?p.disc+'%OFF🔥':'セール🔥')+'】商品名20文字以内\n\u00a5'+
+    (p.orig?fmt(p.orig)+'\u2192':'')+'\u00a5'+fmt(p.sale)+'（\u00a5'+fmt(p.save)+'お得！）'+ef+
+    '\n⏰特徴一言\n\n'+p.link+'\n#PR #AD #AM #セール #激安\n\n文字数厳守。Markdown不使用。'
+  );
 }
 
-async function genBlogText(p) {
-  const date = new Date().toLocaleDateString('ja-JP');
+/* ===== ブログ記事生成 ===== */
+function makeBl(p) {
+  var title  = p.selTitle || '【'+(p.disc>0?p.disc+'%OFF':'セール')+'】'+(p.name||'（商品名を簡潔に）');
+  var ptBlock = p.pt > 0 ?
+    '\n## 🪙 ポイント還元\n\n<div style="background:#f3faf7;border:2px solid #00897b;border-radius:10px;padding:16px 20px;margin:12px 0">' +
+    '<div>🪙 <strong>獲得ポイント</strong>: <span style="color:#FF9900;font-weight:bold;font-size:18px">+'+fmt(p.pt)+'pt</span></div>' +
+    '<div style="margin-top:10px;padding-top:10px;border-top:1px solid #b2dfdb">実質価格: <strong style="font-size:22px;color:#e53935">\u00a5'+fmt(p.eff)+'</strong></div></div>\n' : '';
 
-  const pointBlock = p.point > 0 ? `
-## 🪙 ポイント還元でさらにお得！
-
-<div style="background:#f3faf7;border:2px solid #00897b;border-radius:10px;padding:16px 20px;margin:12px 0">
-<div style="margin-bottom:6px">🪙 <strong>獲得ポイント</strong>: <span style="color:#FF9900;font-weight:bold;font-size:18px">+${fmtNum(p.point)}pt</span></div>
-<div style="margin-top:10px;padding-top:10px;border-top:1px solid #b2dfdb">
-<span style="font-size:13px;color:#555">💰 実質価格（ポイント現金換算後）: </span><strong style="font-size:22px;color:#e53935">¥${fmtNum(p.effective)}</strong>
-</div>
-</div>
-` : '';
-
-  const prompt = `あなたはAmazonアフィリエイトのプロブロガーです。
-以下の商品情報ではてなブログ用Markdown記事を作成してください。
-
-ASIN: ${p.asin}
-商品名: ${p.name || '（ASINから推測）'}
-ご請求額（実際の支払い額）: ¥${fmtNum(p.sale)}
-定価: ${p.orig ? '¥'+fmtNum(p.orig) : '不明'}
-割引率: ${p.disc > 0 ? p.disc+'%OFF' : '不明'}
-節約額: ${p.save > 0 ? '¥'+fmtNum(p.save) : '不明'}
-獲得ポイント: ${p.point > 0 ? fmtNum(p.point)+'pt' : 'なし'}
-実質価格: ${p.effective != null ? '¥'+fmtNum(p.effective) : 'なし'}
-商品画像URL: ${p.imageUrl}
-購入リンク: ${p.affLink}
-補足: ${p.note || 'なし'}
-作成日: ${date}
-
-【必須構成・必ず守ること】
-
-# 【${p.disc > 0 ? p.disc+'%OFF' : 'セール'}】（商品名を簡潔に）
-
-[![商品画像](${p.imageUrl})](${p.affLink})
-
-> ※本記事にはアフィリエイトリンクが含まれます。 #AD
-
-（リード文100文字・読者の共感を呼ぶ内容）
-
-## 💰 価格情報
-
-<div style="background:#fff8f8;border:2px solid #e53935;border-radius:10px;padding:16px 20px;margin:12px 0">
-<div><span style="background:#e53935;color:#fff;font-weight:bold;font-size:16px;padding:3px 12px;border-radius:20px;margin-right:10px">${p.disc > 0 ? '-'+p.disc+'%' : 'SALE'}</span><span style="font-size:26px;font-weight:bold;color:#e53935">¥${fmtNum(p.sale)}</span><span style="font-size:12px;color:#999">税込</span></div>
-${p.orig > 0 ? `<div style="margin-top:6px"><span style="font-size:13px;color:#888">参考価格: </span><span style="font-size:13px;color:#888;text-decoration:line-through">¥${fmtNum(p.orig)}</span></div>` : ''}
-${p.save > 0 ? `<div style="margin-top:6px;font-size:13px;color:#00897b;font-weight:bold">✅ ¥${fmtNum(p.save)}お得！</div>` : ''}
-</div>
-
-${pointBlock}
-
-## こんな人におすすめ
-
-- おすすめポイント1
-- おすすめポイント2
-- おすすめポイント3
-- おすすめポイント4
-- おすすめポイント5
-
-## スペック・特徴
-
-（商品名から推測して箇条書きで記載）
-
-## メリット・デメリット
-
-> 💡 **メリット**
-> - メリット1
-> - メリット2
-> - メリット3
-
-> ⚠️ **デメリット**
-> - デメリット1
-> - デメリット2
-
-## まとめ・購入はこちら
-
-（まとめ文を2〜3文で）
-
-[![Amazonで購入する](${p.imageUrl})](${p.affLink})
-
-[🛒 Amazonで今すぐ購入する（¥${fmtNum(p.sale)}）](${p.affLink})
-
-【ルール】
-- 各セクションは必ず空行で区切ること
-- 購買意欲を高める文体
-- タイトルの（商品名を簡潔に）部分は実際の商品名に必ず置き換えること
-- ${p.point > 0 ? 'ポイント・実質価格は必ず記事に盛り込むこと' : 'ポイントセクションは今回不要'}`;
-  return await callClaude(prompt);
+  return callAI(
+    'はてなブログAmazonアフィリエイト記事をMarkdownで作成してください。\n' +
+    'ASIN:'+p.asin+'\n商品名:'+(p.name||'（ASINから推測）')+'\n請求額:\u00a5'+fmt(p.sale)+
+    '\n定価:'+(p.orig?'\u00a5'+fmt(p.orig):'不明')+'\n割引:'+(p.disc>0?p.disc+'%OFF':'不明')+
+    '\nPt:'+(p.pt>0?fmt(p.pt)+'pt':'なし')+'\n実質:'+(p.eff?'\u00a5'+fmt(p.eff):'なし')+
+    '\n画像URL:'+p.iUrl+'\nアフィリエイトリンク:'+p.link+'\n補足:'+(p.note||'なし')+'\n作成日:'+p.date+'\n\n' +
+    '【記事タイトル】\n' + title + '\n\n' +
+    '【必須構成】\n' +
+    '# '+title+'\n\n' +
+    '[![商品画像]('+p.iUrl+')]('+p.link+')\n\n' +
+    '> ※本記事にはアフィリエイトリンクが含まれます。 #AD\n\n' +
+    '（リード文：読者が得する理由を120文字で）\n\n' +
+    '## 💰 価格情報\n\n' +
+    '<div style="background:#fff8f8;border:2px solid #e53935;border-radius:10px;padding:16px 20px;margin:12px 0">' +
+    '<div><span style="background:#e53935;color:#fff;font-weight:bold;padding:3px 12px;border-radius:20px;margin-right:10px">'+(p.disc>0?'-'+p.disc+'%':'SALE')+'</span>' +
+    '<span style="font-size:26px;font-weight:bold;color:#e53935">\u00a5'+fmt(p.sale)+'</span></div>' +
+    (p.orig>0?'<div style="margin-top:6px"><span style="color:#888;text-decoration:line-through">\u00a5'+fmt(p.orig)+'</span></div>':'') +
+    (p.save>0?'<div style="margin-top:6px;color:#00897b;font-weight:bold">\u2705 \u00a5'+fmt(p.save)+'お得！</div>':'') +
+    '</div>\n\n' + ptBlock +
+    '## こんな人におすすめ\n\n（箇条書き5点）\n\n' +
+    '## スペック・特徴\n\n（箇条書き）\n\n' +
+    '## メリット\n\n（3点）\n\n' +
+    '## デメリット\n\n（2点）\n\n' +
+    '## まとめ\n\n（まとめ2〜3文。購入を後押しする文章）\n\n' +
+    '[🛒 Amazonで今すぐ購入する（\u00a5'+fmt(p.sale)+'）]('+p.link+')\n\n' +
+    '【ルール】タイトルをそのまま使うこと。Markdownのみ。HTMLタグはdivのみ使用可。'
+  );
 }
 
-async function callClaude(prompt) {
-  const res = await fetch(WORKER_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'claude', prompt })
-  });
-  const data = await res.json();
-  if (data.error) throw new Error(data.error);
-  return data.text || '';
+/* ===== X投稿 ===== */
+function updTw() {
+  var t  = document.getElementById('twOut').textContent;
+  var el = document.getElementById('twCount');
+  el.textContent = t.length + '文字';
+  el.className   = 'cc' + (t.length > 140 ? ' over' : '');
 }
-
-function updateTweetCount() {
-  const text = document.getElementById('tweetOutput').textContent;
-  const el   = document.getElementById('tweetCount');
-  el.textContent = text.length + '文字';
-  el.className   = 'char-count' + (text.length > 140 ? ' over' : '');
-}
-
-function copyAndOpenX() {
-  const text = document.getElementById('tweetOutput').textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    toast('コピーしました！Xに貼り付けて投稿してください 🐦');
+function copyX() {
+  navigator.clipboard.writeText(document.getElementById('twOut').textContent).then(function(){
+    toast('コピーしました！');
     window.open('https://twitter.com/intent/tweet', '_blank');
   });
 }
 
-function copyBlog() {
-  const text = document.getElementById('blogOutput').textContent;
-  navigator.clipboard.writeText(text).then(() => toast('記事をコピーしました！'));
+/* ===== ブログ記事コピー・DL ===== */
+function copyBl() {
+  navigator.clipboard.writeText(document.getElementById('blOut').textContent)
+    .then(function(){ toast('記事をコピーしました！'); });
 }
-
-function downloadBlog() {
-  const text = document.getElementById('blogOutput').textContent;
-  if (!text) { toast('まず生成してください', 1); return; }
-  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-  const a    = document.createElement('a');
-  a.href     = URL.createObjectURL(blob);
-  a.download = 'blog-' + Date.now() + '.md';
-  a.click();
+function dlBl() {
+  var t = document.getElementById('blOut').textContent;
+  if (!t) { toast('まず生成してください', 1); return; }
+  dl(t, 'blog-' + Date.now() + '.md');
+}
+function dl(text, filename) {
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text],{type:'text/plain;charset=utf-8'}));
+  a.download = filename; a.click();
   toast('保存しました！');
 }
 
-async function regenTweet(btn) {
-  if (!currentProduct) { toast('先に商品情報を入力してください', 1); return; }
+/* ===== 再生成 ===== */
+async function regenTw(btn) {
+  if (!cur) { toast('先に商品情報を入力してください', 1); return; }
+  btn.disabled = true; btn.textContent = '生成中...';
+  try { document.getElementById('twOut').textContent = await makeTw(cur); updTw(); toast('再生成しました！'); }
+  catch(e) { toast('失敗: '+e.message, 1); }
+  finally { btn.disabled = false; btn.textContent = '🔄 再生成'; }
+}
+async function regenBl(btn) {
+  if (!cur) { toast('先に商品情報を入力してください', 1); return; }
   btn.disabled = true; btn.textContent = '生成中...';
   try {
-    const tw = await genTweetText(currentProduct);
-    document.getElementById('tweetOutput').textContent = tw;
-    updateTweetCount();
+    var bl = await makeBl(cur);
+    document.getElementById('blOut').textContent = bl;
+    document.getElementById('blCount').textContent = bl.length+'文字';
     toast('再生成しました！');
-  } catch(e) { toast('失敗: ' + e.message, 1); }
+  }
+  catch(e) { toast('失敗: '+e.message, 1); }
   finally { btn.disabled = false; btn.textContent = '🔄 再生成'; }
 }
 
-async function regenBlog(btn) {
-  if (!currentProduct) { toast('先に商品情報を入力してください', 1); return; }
-  btn.disabled = true; btn.textContent = '生成中...';
+/* ===== はてなブログ投稿 ===== */
+async function postHatena() {
+  if (!cur) { toast('先に商品情報を入力してください', 1); return; }
+  var body = document.getElementById('blOut').textContent;
+  if (!body) { toast('先に記事を生成してください', 1); return; }
+  var title = body.split('\n')[0].replace(/^#+\s*/,'').trim();
+  var btn   = document.getElementById('hatBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="sp"></span>投稿中...';
   try {
-    const bl = await genBlogText(currentProduct);
-    document.getElementById('blogOutput').textContent  = bl;
-    document.getElementById('blogCount').textContent = bl.length + '文字';
-    toast('再生成しました！');
-  } catch(e) { toast('失敗: ' + e.message, 1); }
-  finally { btn.disabled = false; btn.textContent = '🔄 再生成'; }
+    var r = await fetch(WK, {method:'POST',headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({action:'hatena-post',title:title,body:body,hatenaId:HID,blogId:BID,category:cur.cat,imageUrl:cur.iUrl})});
+    var d = await r.json();
+    if (d.error) throw new Error(d.error);
+    toast('投稿しました！🎉');
+  } catch(e) { toast('投稿失敗: '+e.message, 1); }
+  finally { btn.disabled = false; btn.innerHTML = '📝 はてなブログに投稿'; }
 }
 
-function guessCategory(name) {
-  if (!name) return 'その他セール';
-  if (/イヤホン|スピーカー|カメラ|PC|パソコン|タブレット|スマホ|充電|バッテリー|マウス|キーボード|モニター|プリンター|ルーター|SSD|HDD|ゲーム|テレビ|冷蔵庫|洗濯|掃除|炊飯|電子レンジ|エアコン|扇風機|照明|ランプ/i.test(name)) return '家電・ガジェット';
-  if (/シャンプー|コスメ|美容|スキンケア|化粧|サプリ|ビタミン|プロテイン|マスク|除菌|薬|医薬|整腸|乳酸菌/i.test(name)) return '美容・健康';
-  if (/食品|お菓子|飲料|コーヒー|お茶|米|麺|調味料|缶詰|冷凍|ペットフード|日用品|洗剤|ティッシュ|トイレ/i.test(name)) return '食品・日用品';
-  if (/テント|アウトドア|登山|キャンプ|釣り|自転車|スポーツ|ヨガ|トレーニング|ランニング/i.test(name)) return 'スポーツ・アウトドア';
-  if (/服|シャツ|パンツ|ジャケット|バッグ|財布|靴|スニーカー|帽子|アクセサリー/i.test(name)) return 'ファッション';
-  return 'その他セール';
+/* ===== 記事ストック（localStorage永続） ===== */
+function saveArticleStock() {
+  localStorage.setItem('articleStock', JSON.stringify(articleStock));
+  renderStockPage();
+  renderStockSidebar();
 }
 
-async function postToHatena() {
-  if (!currentProduct) { toast('先に商品情報を入力してください', 1); return; }
-  const title = document.getElementById('blogOutput').textContent.split('\n')[0].replace(/^#\s*/, '').trim();
-  const body  = document.getElementById('blogOutput').textContent;
-  if (!body) { toast('先にブログ記事を生成してください', 1); return; }
+// 自動保存（生成時）
+function autoSaveArticle(p, body) {
+  var title = body.split('\n')[0].replace(/^#+\s*/,'').trim() || (p.name || p.asin);
+  var idx   = articleStock.findIndex(function(a){ return a.asin === p.asin; });
+  var item  = {
+    id:      Date.now(),
+    asin:    p.asin,
+    name:    p.name || p.asin,
+    title:   title,
+    cat:     p.cat,
+    sale:    p.sale,
+    orig:    p.orig,
+    disc:    p.disc,
+    link:    p.link,
+    iUrl:    p.iUrl,
+    body:    body,
+    savedAt: new Date().toLocaleDateString('ja-JP') + ' ' + new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})
+  };
+  if (idx >= 0) articleStock[idx] = item;
+  else articleStock.unshift(item);
+  saveArticleStock();
+}
 
-  const btn = document.getElementById('hatenaBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="sp"></span>投稿中...';
+// 手動保存
+function saveToStock() {
+  if (!cur) { toast('先に記事を生成してください', 1); return; }
+  var body = document.getElementById('blOut').textContent;
+  if (!body) { toast('先に記事を生成してください', 1); return; }
+  autoSaveArticle(cur, body);
+  toast('📦 ストックに保存しました！');
+}
 
-  try {
-    const category = guessCategory(currentProduct.name || title);
-    const res = await fetch(WORKER_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'hatena-post', title, body, hatenaId: HATENA_ID, blogId: BLOG_ID, category, imageUrl: currentProduct.imageUrl })
-    });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error);
-    toast(`投稿しました！🎉 カテゴリ: ${category}`);
-  } catch(e) {
-    toast('投稿失敗: ' + e.message, 1);
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '📝 はてなブログに投稿';
+// ストック一覧ページ表示
+function renderStockPage() {
+  var el  = document.getElementById('stockPageList');
+  var cnt = document.getElementById('stockPageCount');
+  cnt.textContent = '（' + articleStock.length + '件）';
+  if (!articleStock.length) {
+    el.innerHTML = '<div class="stock-empty">まだ記事がありません。記事作成タブで記事を生成してください。</div>';
+    return;
+  }
+  el.innerHTML = '';
+  var list = document.createElement('div');
+  list.className = 'stock-list';
+  articleStock.forEach(function(item, idx) {
+    var card = document.createElement('div');
+    card.className = 'stock-card';
+    card.innerHTML =
+      '<img class="stock-thumb" src="'+item.iUrl+'" onerror="this.style.display=\'none\'">' +
+      '<div class="stock-info">' +
+        '<div class="stock-name">'+item.title+'</div>' +
+        '<div class="stock-meta">' +
+          '<span>'+item.savedAt+'</span>' +
+          '<span class="stock-badge badge-asin">ASIN: '+item.asin+'</span>' +
+          (item.disc>0?'<span class="stock-badge badge-disc">-'+item.disc+'%</span>':'') +
+          '<span style="color:var(--mu)">'+item.cat+'</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="stock-actions">' +
+        '<button class="btn bs btn-sm" onclick="viewArticle('+idx+')">📄 開く</button>' +
+        '<button class="btn bs btn-sm" onclick="copyArticle('+idx+')">📋 コピー</button>' +
+        '<button class="btn bpu btn-sm" onclick="addToRank('+idx+')">🏆 ランキングに追加</button>' +
+        '<button class="btn bre btn-sm" onclick="deleteArticle('+idx+')">🗑️</button>' +
+      '</div>';
+    list.appendChild(card);
+  });
+  el.appendChild(list);
+}
+
+// ストックサイドバー（記事作成タブ内）
+function renderStockSidebar() {
+  var el  = document.getElementById('stList');
+  var cnt = document.getElementById('stCount');
+  if (!el) return;
+  cnt.textContent = '（' + articleStock.length + '件）';
+  el.innerHTML = '';
+  if (!articleStock.length) {
+    el.innerHTML = '<div class="stock-empty">まだ記事がありません。上で記事を生成すると自動保存されます。</div>';
+    return;
+  }
+  var list = document.createElement('div');
+  list.className = 'stock-list';
+  articleStock.slice(0, 5).forEach(function(item, idx) {
+    var card = document.createElement('div');
+    card.className = 'stock-card';
+    card.style.cursor = 'pointer';
+    card.innerHTML =
+      '<img class="stock-thumb" src="'+item.iUrl+'" onerror="this.style.display=\'none\'">' +
+      '<div class="stock-info">' +
+        '<div class="stock-name">'+item.title+'</div>' +
+        '<div class="stock-meta"><span>'+item.savedAt+'</span>'+(item.disc>0?'<span class="stock-badge badge-disc">-'+item.disc+'%</span>':'')+'</div>' +
+      '</div>' +
+      '<div class="stock-actions">' +
+        '<button class="btn bs btn-sm" onclick="viewArticle('+idx+')">📄</button>' +
+        '<button class="btn bs btn-sm" onclick="copyArticle('+idx+')">📋</button>' +
+        '<button class="btn bre btn-sm" onclick="deleteArticle('+idx+')">🗑️</button>' +
+      '</div>';
+    list.appendChild(card);
+  });
+  el.appendChild(list);
+  if (articleStock.length > 5) {
+    var more = document.createElement('div');
+    more.style = 'text-align:center;margin-top:10px';
+    more.innerHTML = '<button class="btn bs btn-sm" onclick="swTab(\'stock\',document.getElementById(\'btn-stock\'))">全'+articleStock.length+'件を見る →</button>';
+    el.appendChild(more);
   }
 }
 
-async function searchItems() {
-  const keywords = document.getElementById('keywords').value.trim();
-  if (!keywords) { toast('キーワードを入力してください', 1); return; }
-  const btn = document.getElementById('searchBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="sp"></span>検索中...';
-  document.getElementById('resultsArea').innerHTML = `<div class="loading-grid">${Array(6).fill('<div class="skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>').join('')}</div>`;
+function viewArticle(idx) {
+  var item = articleStock[idx];
+  if (!item) return;
+  document.getElementById('modalTitle').textContent = item.title;
+  document.getElementById('modalOut').textContent   = item.body;
+  document.getElementById('viewModal').classList.add('show');
+}
+function copyArticle(idx) {
+  var item = articleStock[idx];
+  if (!item) return;
+  navigator.clipboard.writeText(item.body).then(function(){ toast('コピーしました！'); });
+}
+function deleteArticle(idx) {
+  if (!confirm('この記事を削除しますか？')) return;
+  articleStock.splice(idx, 1);
+  saveArticleStock();
+  toast('削除しました');
+}
+function closeModal() { document.getElementById('viewModal').classList.remove('show'); }
+function copyModal() {
+  navigator.clipboard.writeText(document.getElementById('modalOut').textContent)
+    .then(function(){ toast('コピーしました！'); });
+}
+
+/* ===== まとめ記事ストック（旧） ===== */
+function addToMtStock(p) {
+  var idx  = stockItems.findIndex(function(i){ return i.asin===p.asin; });
+  var item = {asin:p.asin,name:p.name,sale:p.sale,orig:p.orig,pt:p.pt,eff:p.eff,link:p.link,addedAt:Date.now()};
+  if (idx>=0) stockItems[idx]=item; else stockItems.unshift(item);
+  localStorage.setItem('amzStock', JSON.stringify(stockItems));
+}
+
+/* ===== まとめ記事生成 ===== */
+async function genMatome() {
+  if (stockItems.length < 2) { toast('商品が2件以上必要です', 1); return; }
+  var style = document.getElementById('mtStyle').value;
+  var cat   = document.getElementById('mtCat').value;
+  var max   = parseInt(document.getElementById('mtMax').value);
+  var date  = new Date().toLocaleDateString('ja-JP');
+  var tgts  = stockItems.slice();
+  if (cat) tgts = tgts.filter(function(i){ return guessCategory(i.name)===cat; });
+  tgts = tgts.slice(0, max);
+  if (!tgts.length) { toast('該当する商品がありません', 1); return; }
+
+  var btn   = document.getElementById('mtBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="sp"></span>生成中...';
+  var label = style==='daily' ? '今日('+date+')のお得まとめ' : (cat||'セール')+'カテゴリまとめ';
+
+  var itemsTxt = tgts.map(function(item,i){
+    var disc = (item.orig>0&&item.sale<item.orig) ? Math.round((1-item.sale/item.orig)*100) : 0;
+    return (i+1)+'. '+(item.name||'ASIN:'+item.asin)+
+      '\n   価格:'+fmt(item.sale)+'円'+(disc>0?' (-'+disc+'%)':'')+(item.eff?' 実質'+fmt(item.eff)+'円':'')+
+      '\n   リンク:'+item.link+
+      '\n   画像:https://images-na.ssl-images-amazon.com/images/P/'+item.asin+'.jpg';
+  }).join('\n\n');
+
+  var sections = tgts.map(function(item,i){
+    var disc = (item.orig>0&&item.sale<item.orig) ? Math.round((1-item.sale/item.orig)*100) : 0;
+    var pt   = fmt(item.sale)+'円'+(disc>0?' (-'+disc+'%)':'')+(item.eff?' → 実質'+fmt(item.eff)+'円':'');
+    var img  = 'https://images-na.ssl-images-amazon.com/images/P/'+item.asin+'.jpg';
+    return '## '+(i+1)+'. （商品名を簡潔に）\n\n[![画像]('+img+')]('+item.link+')\n\n- 価格: '+pt+'\n- おすすめポイントを1〜2行で\n\n[Amazonで購入する]('+item.link+')';
+  }).join('\n\n---\n\n');
+
+  var prompt =
+    'はてなブログAmazonアフィリエイト「'+label+'」まとめ記事をMarkdownで作成。\n\n【商品リスト】\n'+itemsTxt+'\n\n【構成】\n'+
+    '# '+label+'【全'+tgts.length+'選】Amazon激安セール情報\n\n> ※本記事にはアフィリエイトリンクが含まれます。 #AD\n\n（リード文100文字）\n\n'+
+    '## 今回のまとめ商品一覧\n\n| # | 商品名 | 価格 | 割引 |\n|---|--------|------|------|\n（各商品を表で一覧）\n\n---\n\n'+sections+'\n\n---\n\n## まとめ\n\n（50文字）\n\n'+
+    '【ルール】（商品名を簡潔に）は実際の商品名に置き換えること。表の商品名は20文字以内に省略。Markdownのみ。';
+
   try {
-    const res = await fetch(WORKER_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ keywords, category: document.getElementById('category').value, minDiscount: parseInt(document.getElementById('minDiscount').value), sortBy: 'Relevance' })
-    });
-    const data = await res.json();
-    if (!res.ok || data.error) throw new Error(data.error || 'APIエラー');
-    allItems = data.items || [];
-    renderResults();
-    if (!allItems.length) document.getElementById('resultsArea').innerHTML = `<div class="empty-state"><div class="empty-icon">😢</div><div class="empty-title">該当商品が見つかりませんでした</div></div>`;
-  } catch(e) {
-    document.getElementById('resultsArea').innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">エラー</div><div style="color:var(--re);font-size:13px">${e.message}</div></div>`;
-  } finally {
-    btn.disabled = false; btn.innerHTML = '🔍 セール品を探す';
+    var result = await callAI(prompt);
+    document.getElementById('mtOut').textContent      = result;
+    document.getElementById('mtResult').style.display = 'block';
+    document.getElementById('mtCount').textContent    = result.length + '文字';
+    document.getElementById('mtResult').scrollIntoView({behavior:'smooth'});
+    toast('まとめ記事を生成しました！');
+  } catch(e) { toast('生成失敗: '+e.message, 1); }
+  finally { btn.disabled=false; btn.innerHTML='📋 まとめ記事を生成'; }
+}
+function copyMt() { navigator.clipboard.writeText(document.getElementById('mtOut').textContent).then(function(){ toast('コピーしました！'); }); }
+function dlMt()   { dl(document.getElementById('mtOut').textContent, 'matome-'+Date.now()+'.md'); }
+async function postMt() {
+  var body  = document.getElementById('mtOut').textContent;
+  if (!body){ toast('先に生成してください', 1); return; }
+  var title = body.split('\n')[0].replace(/^#+\s*/,'').trim();
+  var btn   = document.getElementById('mtBtn');
+  btn.disabled=true; btn.innerHTML='<span class="sp"></span>投稿中...';
+  try {
+    var r = await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'hatena-post',title:title,body:body,hatenaId:HID,blogId:BID,category:'まとめ',imageUrl:stockItems[0]?imgUrl(stockItems[0].asin):''})});
+    var d = await r.json(); if(d.error) throw new Error(d.error);
+    toast('投稿しました！');
+  } catch(e) { toast('投稿失敗: '+e.message, 1); }
+  finally { btn.disabled=false; btn.innerHTML='📋 まとめ記事を生成'; }
+}
+
+/* ===== ランキング記事 ===== */
+function addToRank(stockIdx) {
+  var item = articleStock[stockIdx];
+  if (!item) return;
+  if (rankItems.find(function(r){ return r.asin===item.asin; })) {
+    toast('すでにランキングに追加されています', 1); return;
   }
+  rankItems.push({asin:item.asin, name:item.name||item.title, sale:item.sale, orig:item.orig, disc:item.disc, link:item.link, iUrl:item.iUrl, body:item.body});
+  renderRankSlots();
+  toast('🏆 ランキングに追加しました！ランキング記事タブへ');
 }
 
-function renderResults() {
-  const area = document.getElementById('resultsArea');
-  const saving = i => i.originalPrice && i.price ? i.originalPrice - i.price : 0;
-  area.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <div style="font-size:15px;font-weight:700">検索結果</div>
-      <div style="font-size:12px;color:var(--mu)">${allItems.length}件</div>
-    </div>
-    <div class="product-grid">
-      ${allItems.map(item => `
-        <div class="product-card">
-          ${item.image ? `<img class="card-img" src="${item.image}" alt="${item.title}" loading="lazy">` : `<div class="card-img-ph">📦</div>`}
-          <div class="card-body">
-            <div class="card-title2">${item.title}</div>
-            <div class="card-badges">
-              ${item.discount > 0 ? `<span class="badge-disc">-${item.discount}%</span>` : ''}
-              ${item.price ? `<span class="badge-price">¥${fmtNum(item.price)}</span>` : ''}
-              ${item.originalPrice ? `<span class="badge-orig">¥${fmtNum(item.originalPrice)}</span>` : ''}
-            </div>
-            ${saving(item) > 0 ? `<div style="font-size:11px;color:var(--gr);font-weight:700">¥${fmtNum(saving(item))}お得！</div>` : ''}
-            <div class="card-actions">
-              <button class="btn btn-tw" onclick="quickPost('${item.asin}','${encodeURIComponent(item.title)}',${item.price||0},${item.originalPrice||0})">⚡ 投稿文・記事を生成</button>
-              <a href="${item.url}" target="_blank" style="display:flex;align-items:center;justify-content:center;padding:7px;border-radius:8px;border:1px solid var(--bd);color:var(--am);text-decoration:none;font-size:11px;font-weight:700">🛒 Amazonで見る</a>
-            </div>
-          </div>
-        </div>`).join('')}
-    </div>`;
+function renderRankSlots() {
+  var el  = document.getElementById('rankSlots');
+  var cnt = document.getElementById('rankCount');
+  cnt.textContent = '（'+rankItems.length+'件）';
+  if (!rankItems.length) {
+    el.innerHTML = '<div class="stock-empty">まだ商品がありません。ストックから追加してください。</div>';
+    return;
+  }
+  el.innerHTML = '';
+  rankItems.forEach(function(item, idx) {
+    var colors = ['gold','silver','bronze'];
+    var div = document.createElement('div');
+    div.className = 'rank-slot';
+    div.innerHTML =
+      '<div class="rank-num '+(colors[idx]||'')+'"><span>'+(idx+1)+'位</span></div>' +
+      '<img class="rank-thumb" src="'+item.iUrl+'" onerror="this.style.display=\'none\'">' +
+      '<div class="rank-info">' +
+        '<div class="rank-name">'+item.name+'</div>' +
+        '<div class="rank-price">\u00a5'+fmt(item.sale)+(item.disc>0?' (-'+item.disc+'%)':'')+'</div>' +
+      '</div>' +
+      '<div style="display:flex;gap:6px;flex-shrink:0">' +
+        (idx>0?'<button class="btn bs btn-sm" onclick="moveRank('+idx+',-1)">▲</button>':'') +
+        (idx<rankItems.length-1?'<button class="btn bs btn-sm" onclick="moveRank('+idx+',1)">▼</button>':'') +
+        '<button class="rank-del" onclick="removeRank('+idx+')">\u00d7</button>' +
+      '</div>';
+    el.appendChild(div);
+  });
 }
 
-function quickPost(asin, encodedName, price, orig) {
-  document.getElementById('qUrl').value   = asin;
-  document.getElementById('qName').value  = decodeURIComponent(encodedName);
-  document.getElementById('qSale').value  = price;
-  document.getElementById('qOrig').value  = orig;
-  document.getElementById('qPoint').value = '';
-  calcAll();
-  previewThumb();
-  switchTab('quick', document.getElementById('btn-quick'));
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  generateAll();
+function moveRank(idx, dir) {
+  var to = idx + dir;
+  if (to < 0 || to >= rankItems.length) return;
+  var tmp = rankItems[idx]; rankItems[idx] = rankItems[to]; rankItems[to] = tmp;
+  renderRankSlots();
+}
+function removeRank(idx) { rankItems.splice(idx, 1); renderRankSlots(); }
+function clearRank() { if (!confirm('ランキング構成をクリアしますか？')) return; rankItems=[]; renderRankSlots(); }
+
+async function genRanking() {
+  if (!rankItems.length) { toast('ランキングに商品を追加してください', 1); return; }
+  var rankTitle = document.getElementById('rankTitle').value.trim() || 'おすすめ商品ランキング';
+  var rankTheme = document.getElementById('rankTheme').value.trim();
+  var btn = document.getElementById('rankGenBtn');
+  btn.disabled=true; btn.innerHTML='<span class="sp"></span>生成中...';
+
+  var itemsTxt = rankItems.map(function(item,i){
+    return (i+1)+'位: '+(item.name||item.asin)+
+      '\n   価格:\u00a5'+fmt(item.sale)+(item.disc>0?' (-'+item.disc+'%)':'')+
+      '\n   リンク:'+item.link+
+      '\n   画像:'+item.iUrl+
+      (item.body ? '\n   記事概要:'+(item.body.substring(0,200)+'...') : '');
+  }).join('\n\n');
+
+  var prompt =
+    'はてなブログAmazonアフィリエイト「'+rankTitle+'」ランキング記事をMarkdownで作成してください。\n\n' +
+    (rankTheme?'テーマ・対象: '+rankTheme+'\n\n':'') +
+    '【ランキング商品リスト（順位は固定）】\n'+itemsTxt+'\n\n' +
+    '【必須構成】\n' +
+    '# '+rankTitle+'【'+rankItems.length+'選】\n\n' +
+    '> ※本記事にはアフィリエイトリンクが含まれます。 #AD\n\n' +
+    '（リード文120文字：このランキングを読む価値を伝える）\n\n' +
+    '## 選び方のポイント\n\n（3点）\n\n' +
+    rankItems.map(function(item,i){
+      var medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'🏅';
+      return '## '+(i+1)+'位 '+medal+' （商品名を簡潔に）\n\n' +
+        '[![画像]('+item.iUrl+')]('+item.link+')\n\n' +
+        '| 項目 | 内容 |\n|------|------|\n' +
+        '| 💰 価格 | \u00a5'+fmt(item.sale)+(item.disc>0?' (-'+item.disc+'%)':'')+' |\n' +
+        '| ✅ おすすめ度 | ★★★★☆ |\n\n' +
+        '（この商品のおすすめポイントを2〜3文で）\n\n' +
+        '[🛒 Amazonで購入する]('+item.link+')';
+    }).join('\n\n---\n\n') +
+    '\n\n---\n\n## まとめ\n\n（ランキングの総括・購入を後押しする文章を3文で）\n\n' +
+    '【ルール】各（商品名を簡潔に）は実際の商品名に置き換えること。Markdownのみ。';
+
+  try {
+    var result = await callAI(prompt);
+    document.getElementById('rankOut').textContent      = result;
+    document.getElementById('rankResult').style.display = 'block';
+    document.getElementById('rankCount2').textContent   = result.length + '文字';
+    document.getElementById('rankResult').scrollIntoView({behavior:'smooth'});
+    toast('ランキング記事を生成しました！');
+  } catch(e) { toast('生成失敗: '+e.message, 1); }
+  finally { btn.disabled=false; btn.innerHTML='🏆 ランキング記事を生成（AI）'; }
+}
+
+function copyRank() { navigator.clipboard.writeText(document.getElementById('rankOut').textContent).then(function(){ toast('コピーしました！'); }); }
+function dlRank()   { dl(document.getElementById('rankOut').textContent, 'ranking-'+Date.now()+'.md'); }
+async function postRank() {
+  var body  = document.getElementById('rankOut').textContent;
+  if (!body){ toast('先に生成してください', 1); return; }
+  var title = body.split('\n')[0].replace(/^#+\s*/,'').trim();
+  var btn   = document.getElementById('rankGenBtn');
+  btn.disabled=true; btn.innerHTML='<span class="sp"></span>投稿中...';
+  try {
+    var r = await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'hatena-post',title:title,body:body,hatenaId:HID,blogId:BID,category:'ランキング',imageUrl:rankItems[0]?rankItems[0].iUrl:''})});
+    var d = await r.json(); if(d.error) throw new Error(d.error);
+    toast('投稿しました！');
+  } catch(e) { toast('投稿失敗: '+e.message, 1); }
+  finally { btn.disabled=false; btn.innerHTML='🏆 ランキング記事を生成（AI）'; }
+}
+
+/* ===== セール品検索（PA-API） ===== */
+async function doSearch() {
+  var kw = document.getElementById('kw').value.trim();
+  if (!kw) { toast('キーワードを入力してください', 1); return; }
+  var btn = document.getElementById('srchBtn');
+  btn.disabled=true; btn.innerHTML='<span class="sp"></span>検索中...';
+  try {
+    var r = await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({keywords:kw,category:document.getElementById('cat').value,minDiscount:parseInt(document.getElementById('disc').value),sortBy:'Relevance'})});
+    var d = await r.json();
+    if (!r.ok||d.error) throw new Error(d.error||'APIエラー');
+    var items = d.items||[];
+    document.getElementById('srchResult').innerHTML = items.length
+      ? '<div style="font-size:13px;margin-bottom:12px">'+items.length+'件見つかりました</div>'
+      : '<div class="empty-st"><div class="empty-ic">😢</div><div class="empty-ti">該当商品が見つかりませんでした</div></div>';
+  } catch(e) {
+    document.getElementById('srchResult').innerHTML = '<div class="empty-st"><div class="empty-ic">⚠️</div><div class="empty-ti">'+e.message+'</div></div>';
+  } finally {
+    btn.disabled=false; btn.innerHTML='🔍 セール品を探す';
+  }
 }
 </script>
 </body>
