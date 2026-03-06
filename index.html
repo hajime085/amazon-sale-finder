@@ -191,12 +191,46 @@ textarea{resize:vertical}
 
       <!-- ASIN表示 + サムネ -->
       <div id="asinRow" style="display:none;margin-bottom:14px">
-        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-          <img id="thumbImg" class="thumb" style="display:block;margin:0;width:80px;height:80px" alt="商品画像">
-          <div>
-            <div style="font-size:11px;color:var(--mu);font-weight:700;margin-bottom:4px">ASIN</div>
-            <div id="asinDisplay" style="font-size:16px;font-weight:800;color:var(--am);letter-spacing:1px"></div>
-            <div style="font-size:11px;color:var(--mu);margin-top:4px" id="affLinkDisplay"></div>
+        <div style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap">
+
+          <!-- ドロップゾーン兼プレビュー -->
+          <div id="imgDropZone"
+            style="flex-shrink:0;width:110px;height:110px;border-radius:12px;border:2px dashed var(--bd);background:var(--s2);cursor:pointer;position:relative;overflow:hidden;transition:border-color .15s"
+            onclick="document.getElementById('imgFileInput').click()"
+            ondragover="onImgDragOver(event)"
+            ondragleave="onImgDragLeave(event)"
+            ondrop="onImgDrop(event)">
+            <!-- プレビュー画像 -->
+            <img id="thumbImg"
+              style="width:100%;height:100%;object-fit:contain;background:#fff;border-radius:10px;padding:6px;display:block"
+              alt="">
+            <!-- ドロップ誘導オーバーレイ（画像なし時） -->
+            <div id="dropOverlay"
+              style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;pointer-events:none">
+              <div style="font-size:22px">📷</div>
+              <div style="font-size:9px;color:var(--mu);text-align:center;line-height:1.4">クリックまたは<br>ドロップ</div>
+            </div>
+          </div>
+          <!-- 隠しファイル入力 -->
+          <input type="file" id="imgFileInput" accept="image/*" style="display:none" onchange="onImgFileSelect(event)">
+
+          <!-- ASIN情報 + URL入力 -->
+          <div style="flex:1;min-width:200px">
+            <div style="font-size:11px;color:var(--mu);font-weight:700;margin-bottom:2px">ASIN</div>
+            <div id="asinDisplay" style="font-size:16px;font-weight:800;color:var(--am);letter-spacing:1px;margin-bottom:2px"></div>
+            <div style="font-size:11px;color:var(--mu);margin-bottom:10px" id="affLinkDisplay"></div>
+
+            <div style="font-size:11px;color:var(--mu);font-weight:700;margin-bottom:5px">📷 商品画像の設定方法（3通り）</div>
+            <div style="font-size:11px;color:var(--mu);margin-bottom:8px;line-height:1.8">
+              ① 自動取得（URL貼り付け時に自動）<br>
+              ② <strong style="color:var(--tx)">左の枠に画像をドラッグ＆ドロップ</strong>またはクリックして選択<br>
+              ③ AmazonページでURLを右クリックコピーして↓に貼り付け
+            </div>
+            <div style="display:flex;gap:6px">
+              <input id="qImgUrl" placeholder="https://m.media-amazon.com/images/I/..." style="font-size:12px;padding:7px 10px" oninput="onManualImgInput()">
+              <button class="btn bs" style="font-size:11px;padding:7px 10px;white-space:nowrap" onclick="applyManualImg()">✓ 適用</button>
+            </div>
+            <div id="imgSourceLabel" style="font-size:10px;color:var(--gr);margin-top:5px;display:none"></div>
           </div>
         </div>
       </div>
@@ -539,19 +573,93 @@ function onUrlInput() {
   var val  = document.getElementById('qUrl').value;
   var asin = getAsin(val);
   var row  = document.getElementById('asinRow');
-
   if (asin) {
     row.style.display = 'block';
-    document.getElementById('asinDisplay').textContent  = asin;
+    document.getElementById('asinDisplay').textContent    = asin;
     document.getElementById('affLinkDisplay').textContent = affLink(asin);
+    // ローカル画像(base64)がセット済みなら上書きしない
     var img = document.getElementById('thumbImg');
-    img.src = imgUrl(asin);
-    img.onerror = function(){ img.style.display = 'none'; };
-    img.onload  = function(){ img.style.display = 'block'; };
+    if (!img.dataset.localSet) {
+      // URL欄に手動入力がなければASINから自動セット
+      var manualUrl = document.getElementById('qImgUrl').value.trim();
+      if (!manualUrl) setThumb(imgUrl(asin), '自動取得');
+    }
   } else {
     row.style.display = 'none';
   }
   saveLastInput();
+}
+
+// ===== 画像セット共通 =====
+// url: 表示するsrc（http URL or base64）
+// source: ラベル文字列（表示用）
+function setThumb(url, source) {
+  var img = document.getElementById('thumbImg');
+  var overlay = document.getElementById('dropOverlay');
+  var lbl = document.getElementById('imgSourceLabel');
+  img.src = url;
+  img.dataset.localSet = (source === 'ローカルファイル') ? '1' : '';
+  overlay.style.display = 'none';
+  if (lbl) { lbl.textContent = '✓ ' + (source || ''); lbl.style.display = 'block'; }
+  document.getElementById('imgDropZone').style.borderColor = 'var(--am)';
+}
+
+// ===== ドラッグ＆ドロップ =====
+function onImgDragOver(e) {
+  e.preventDefault();
+  document.getElementById('imgDropZone').style.borderColor = 'var(--gr)';
+  document.getElementById('imgDropZone').style.background  = 'rgba(0,214,143,.08)';
+}
+function onImgDragLeave(e) {
+  document.getElementById('imgDropZone').style.borderColor = 'var(--bd)';
+  document.getElementById('imgDropZone').style.background  = 'var(--s2)';
+}
+function onImgDrop(e) {
+  e.preventDefault();
+  document.getElementById('imgDropZone').style.borderColor = 'var(--bd)';
+  document.getElementById('imgDropZone').style.background  = 'var(--s2)';
+  var file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) {
+    readImgFile(file);
+  } else {
+    toast('画像ファイルをドロップしてください', 1);
+  }
+}
+
+// ===== ファイル選択（クリック） =====
+function onImgFileSelect(e) {
+  var file = e.target.files[0];
+  if (file) readImgFile(file);
+}
+
+// ===== ファイル→base64→プレビュー =====
+function readImgFile(file) {
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    setThumb(ev.target.result, 'ローカルファイル');
+    // URL欄はクリア（ローカル画像優先）
+    document.getElementById('qImgUrl').value = '';
+    toast('画像をセットしました！');
+  };
+  reader.readAsDataURL(file);
+}
+
+// ===== 手動URL入力 =====
+function onManualImgInput() {
+  var url = document.getElementById('qImgUrl').value.trim();
+  if (!url) return;
+  // ローカルフラグをリセット
+  document.getElementById('thumbImg').dataset.localSet = '';
+  // URLだけ保持（srcへの反映はブラウザがブロックするため省略・適用ボタンで対応）
+}
+
+// 「✓ 適用」ボタン
+function applyManualImg() {
+  var url = document.getElementById('qImgUrl').value.trim();
+  if (!url) { toast('URLを入力してください', 1); return; }
+  document.getElementById('thumbImg').dataset.localSet = '';
+  setThumb(url, 'URL指定');
+  toast('URLをセットしました（ブラウザ制限により表示されない場合があります）');
 }
 
 /* ===== 価格計算 ===== */
@@ -616,7 +724,7 @@ function genTitles() {
     sale > 0 ? '【\u00a5'+fmt(sale)+'】' + (name || '商品名') + ' レビュー・評判まとめ' : null,
     cat !== 'その他' ? '【'+cat+'】' + (name || '商品名') + ' 徹底レビュー'               : null,
     '【2024年最新】' + (name || '商品名') + ' おすすめな理由',
-    '【買って後悔しない】' + (name || '商品名') + ' メリット・デメリット',
+    '【買って後悔しない】' + (name || '商品名') + ' 嬉しいポイントまとめ',
   ].filter(Boolean);
 
   var grid = document.getElementById('titleGrid');
@@ -653,7 +761,19 @@ async function genAll() {
   if (!asin) { toast('有効なAmazon URLまたはASINを入力してください', 1); return; }
 
   var link = affLink(asin);
-  var iUrl = imgUrl(asin);
+  // 手動入力画像URLがあればそちらを優先、なければ現在表示中のsrcを使う
+  // 画像URL決定：① ローカルbase64 ② 手動URL ③ ASIN自動生成
+  var thumbEl   = document.getElementById('thumbImg');
+  var manualUrl = (document.getElementById('qImgUrl').value || '').trim();
+  var iUrl;
+  if (thumbEl.dataset.localSet === '1') {
+    // ローカルファイル → base64をそのまま使う（記事内のimgタグに直接埋め込み）
+    iUrl = thumbEl.src;
+  } else if (manualUrl) {
+    iUrl = manualUrl;
+  } else {
+    iUrl = imgUrl(asin);
+  }
   var disc = (orig > 0 && sale < orig) ? Math.round((1 - sale/orig)*100) : 0;
   var save = (orig > 0 && sale < orig) ? orig - sale : 0;
   var eff  = pt > 0 ? sale - pt : null;
@@ -731,8 +851,7 @@ function makeBl(p) {
     '</div>\n\n' + ptBlock +
     '## こんな人におすすめ\n\n（箇条書き5点）\n\n' +
     '## スペック・特徴\n\n（箇条書き）\n\n' +
-    '## メリット\n\n（3点）\n\n' +
-    '## デメリット\n\n（2点）\n\n' +
+    '## 😊 ここが嬉しいポイント\n\n（購入して良かったと感じるセリングポイントを5点。読者が「買いたい」と思えるよう前向きな表現で書くこと。ネガティブな情報は含めない）\n\n' +
     '## まとめ\n\n（まとめ2〜3文。購入を後押しする文章）\n\n' +
     '[🛒 Amazonで今すぐ購入する（\u00a5'+fmt(p.sale)+'）]('+p.link+')\n\n' +
     '【ルール】タイトルをそのまま使うこと。Markdownのみ。HTMLタグはdivのみ使用可。'
